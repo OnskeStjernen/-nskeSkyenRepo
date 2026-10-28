@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th = "https://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>AddForm</title>
+</head>
+<body>
+
+<form th:action="@{/saveWish}" th:object="${addedUserWish}" method="post">
+
+    <label for="1"> Din email:  </label>
+    <input id="1" type="email" th:field="*{email}" required>
+    <br>
+    <label for="2"> Ønske: </label>
+    <input id="2" type="text" th:field="*{name}">
+    <br>
+    <label for="3"> Pris: </label>
+    <input id="3" type="number" th:field="*{price}">
+    <br>
+    <label for="4" th:each="t : ${allTags}"> Tags:</label>
+    <input id="4" type="checkbox" th:field="*{tags}" th:value="${t}">
+    <br>
+    <button type="submit"> Send </button>
+    <a th:href="@{/}"> Fortryd </a>
+
+</form>
+
+</body>
+</html>
