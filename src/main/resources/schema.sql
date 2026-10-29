@@ -1,44 +1,68 @@
 -- Database schema for OnskeSkyen
-DROP TABLE IF EXISTS Bruger;
-DROP TABLE IF EXISTS BrugerØnsker;
-DROP TABLE IF EXISTS Ønske;
-DROP TABLE IF EXISTS TagsØnsker;
-DROP TABLE IF EXISTS Tags;
-DROP TABLE IF EXISTS Reservering;
 
-CREATE TABLE Bruger (
-                        bruger_id INT AUTO_INCREMENT PRIMARY KEY,
-                        userName varchar(100) NOT NULL,
-                        email varchar(100),
-                        password varchar(100)
+CREATE DATABASE onskeStjerne;
+USE onskeStjerne;
+
+DROP TABLE IF EXISTS tagsWish;
+DROP TABLE IF EXISTS reserve;
+DROP TABLE IF EXISTS wishCounter;
+DROP TABLE IF EXISTS userWishes;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS wish;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+
+                       user_id INT PRIMARY KEY AUTO_INCREMENT,
+                       userName VARCHAR(100) NOT NULL UNIQUE,
+                       email VARCHAR(100) NOT NULL UNIQUE,
+                       password VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE Ønske (
-                       ønske_id INT AUTO_INCREMENT PRIMARY KEY,
-                       navn varchar(100) NOT NULL,
-                       pris INT
+CREATE TABLE wish (
 
+                      wish_id INT PRIMARY KEY AUTO_INCREMENT,
+                      name    VARCHAR(100) NOT NULL,
+                      price   INT
 );
 
-CREATE TABLE BrugerØnsker (
-                              brugerØnske INT AUTO_INCREMENT PRIMARY KEY,
-                              FOREIGN KEY (bruger_id) REFERENCES Bruger(bruger_id) ON DELETE CASCADE,
-                              FOREIGN KEY (ønske_id) REFERENCES Ønske(ønske_id) ON DELETE CASCADE
+CREATE TABLE userWishes (
+
+                            userWish_id INT PRIMARY KEY AUTO_INCREMENT,
+                            user_id     INT NOT NULL,
+                            FOREIGN KEY (user_id) REFERENCES users (user_id),
+                            wish_id     INT NOT NULL,
+                            FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
 );
 
-CREATE TABLE Reservering (
-                             reserve_id INT AUTO_INCREMENT PRIMARY KEY,
-                             FOREIGN KEY (bruger_id) REFERENCES Bruger(bruger_id) ON DELETE CASCADE,
-                             FOREIGN KEY (ønske_id) REFERENCES Ønske(ønske_id) ON DELETE CASCADE
+CREATE TABLE wishCounter (
+
+                             wishCount_id INT PRIMARY KEY AUTO_INCREMENT,
+                             wish_count INT DEFAULT 0,
+                             wish_id INT NOT NULL,
+                             FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
 );
 
-CREATE TABLE Tags(
-                     tag_id INT AUTO_INCREMENT PRIMARY KEY,
-                     tag_navn varchar(100)
+CREATE TABLE reserve (
+
+                         reserve_id INT PRIMARY KEY AUTO_INCREMENT,
+                         user_id INT NOT NULL,
+                         FOREIGN KEY (user_id) REFERENCES users (user_id),
+                         wish_id INT NOT NULL,
+                         FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
 );
 
-CREATE TABLE TagsØnsker (
-                            tagØnske_id INT AUTO_INCREMENT PRIMARY KEY,
-                            FOREIGN KEY (tag_id) REFERENCES Tags(tag_id) ON DELETE CASCADE,
-                            FOREIGN KEY (ønske_id) REFERENCES Ønske(ønske_id) ON DELETE CASCADE
+CREATE TABLE tags (
+
+                      tag_id INT PRIMARY KEY AUTO_INCREMENT,
+                      tag_name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE tagsWish (
+
+                          tagsWish_id INT PRIMARY KEY AUTO_INCREMENT,
+                          tag_id INT NOT NULL,
+                          FOREIGN KEY (tag_id) REFERENCES tags (tag_id),
+                          wish_id INT NOT NULL,
+                          FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
 );
