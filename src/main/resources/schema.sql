@@ -1,4 +1,4 @@
--- Database schema for OnskeSkyen
+-- Database schema for OnskeSkyen --
 
 CREATE DATABASE onskeStjerne;
 USE onskeStjerne;
