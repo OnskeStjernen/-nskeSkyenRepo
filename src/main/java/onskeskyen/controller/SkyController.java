@@ -18,6 +18,11 @@ public class SkyController {
         this.service = skyService;
     }
 
+    @GetMapping("/")
+    public String home(){
+        return "home";
+    }
+
     @GetMapping("/addWish")
     public String addWish(Model model) {
         UserDTO userWish = new UserDTO();
@@ -31,5 +36,6 @@ public class SkyController {
 
         return "redirect:/";
     }
+
 
 }
