@@ -3,6 +3,8 @@ package onskeskyen.controller;
 
 import jakarta.servlet.http.HttpSession;
 import onskeskyen.model.UserDTO;
+import onskeskyen.model.Wish;
+import onskeskyen.model.WishList;
 import onskeskyen.service.SkyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+
 
 @Controller
 public class SkyController {
@@ -19,6 +23,11 @@ public class SkyController {
 
     public SkyController(SkyService skyservice) {
         this.skyservice = skyservice;
+    }
+
+    @GetMapping({"/", "/homepage"})
+    public String homepage() {
+        return "Homepage";
     }
 
     @GetMapping("/addWish")
@@ -70,6 +79,31 @@ public class SkyController {
         }
         //TODO TEMP
         return null;
+    }
+
+    @GetMapping("quickWish")
+    public String quickAdd(@RequestParam WishList wish,ModelMap model){
+        if(wish == null){
+            WishList wishes = new WishList(null);
+            model.addAttribute("item",wishes);
+            return "";
+        }else{
+
+        }
+
+    }
+
+    @PostMapping("/quickAddWish")
+    public String quickAddWish(@RequestParam String name,
+                               @RequestParam int price,
+                               HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("user_id");
+        if (userId == null) {
+            return "redirect:/login"; // Not logged in yet
+        }
+        // Call skyservice to save the wish for this userId
+        // skyservice.addRecommendedWish(userId, name, price);
+        return "redirect:/quickWish";
     }
 
 }

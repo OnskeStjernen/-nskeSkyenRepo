@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- Large Hero Rectangle: Shooting Star + Smaller Stars SVG on the left, Text + QuickWish button on the right -->
+<section class="hero-rectangle" th:fragment="shootingStarHero">
+    <div class="hero-visual" aria-hidden="true">
+        <svg class="shooting-star-svg" viewBox="0 0 560 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Deep night sky background gradient -->
+                <linearGradient id="skyBg" x1="0" y1="0" x2="560" y2="300" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#0b1120"/>
+                    <stop offset="55%" stop-color="#172554"/>
+                    <stop offset="100%" stop-color="#1e1b4b"/>
+                </linearGradient>
+
+                <!-- Glowing Shooting Star Tail Gradient -->
+                <linearGradient id="shootingTailMain" x1="75" y1="225" x2="418" y2="76" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0"/>
+                    <stop offset="35%" stop-color="#60a5fa" stop-opacity="0.3"/>
+                    <stop offset="75%" stop-color="#fde047" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+                </linearGradient>
+
+                <!-- Secondary outer glow trail -->
+                <linearGradient id="shootingTailGlow" x1="55" y1="235" x2="418" y2="76" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#818cf8" stop-opacity="0"/>
+                    <stop offset="60%" stop-color="#38bdf8" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#fef08a" stop-opacity="0.55"/>
+                </linearGradient>
+
+                <!-- Radial glow behind the shooting star head -->
+                <radialGradient id="starHeadGlow" cx="0.5" cy="0.5" r="0.5">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                    <stop offset="35%" stop-color="#fde047" stop-opacity="0.8"/>
+                    <stop offset="70%" stop-color="#38bdf8" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+                </radialGradient>
+
+                <!-- Soft cloud gradient at bottom -->
+                <linearGradient id="cloudGrad" x1="280" y1="235" x2="280" y2="300" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#312e81" stop-opacity="0.45"/>
+                    <stop offset="100%" stop-color="#0f172a" stop-opacity="0.85"/>
+                </linearGradient>
+
+                <!-- Soft glow filter -->
+                <filter id="glowFilter" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur"/>
+                    <feMerge>
+                        <feMergeNode in="blur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+
+                <!-- Clean 4-point star symbol -->
+                <g id="sparkleStar">
+                    <path d="M0 -9 C1.8 -2.5, 2.5 -1.8, 9 0 C2.5 1.8, 1.8 2.5, 0 9 C-1.8 2.5, -2.5 1.8, -9 0 C-2.5 -1.8, -1.8 -2.5, 0 -9 Z" fill="currentColor"/>
+                </g>
+            </defs>
+
+            <!-- Sky panel -->
+            <rect width="560" height="300" rx="14" fill="url(#skyBg)"/>
+
+            <!-- Subtle nebula circles -->
+            <circle cx="420" cy="90" r="105" fill="#38bdf8" opacity="0.08"/>
+            <circle cx="180" cy="190" r="120" fill="#818cf8" opacity="0.08"/>
+
+            <!-- Soft horizon clouds at bottom -->
+            <path d="M0 268 Q75 238 155 262 T320 255 T485 266 T560 252 L560 300 L0 300 Z" fill="url(#cloudGrad)"/>
+            <path d="M0 282 Q120 258 240 278 T460 272 T560 278 L560 300 L0 300 Z" fill="#090d16" opacity="0.55"/>
+
+            <!-- Smaller star dots around the shooting star -->
+            <circle class="twinkle-slow" cx="56" cy="52" r="2" fill="#e0f2fe" opacity="0.8"/>
+            <circle class="twinkle-mid" cx="122" cy="40" r="1.5" fill="#fef08a" opacity="0.7"/>
+            <circle class="twinkle-slow" cx="86" cy="112" r="2.2" fill="#ffffff" opacity="0.9"/>
+            <circle class="twinkle-mid" cx="50" cy="172" r="1.6" fill="#bae6fd" opacity="0.65"/>
+            <circle class="twinkle-slow" cx="168" cy="88" r="2.3" fill="#fef9c3" opacity="0.85"/>
+            <circle class="twinkle-mid" cx="240" cy="46" r="1.8" fill="#e0f2fe" opacity="0.75"/>
+            <circle class="twinkle-slow" cx="314" cy="36" r="2" fill="#ffffff" opacity="0.8"/>
+            <circle class="twinkle-mid" cx="494" cy="52" r="2" fill="#fde047" opacity="0.85"/>
+            <circle class="twinkle-slow" cx="510" cy="132" r="1.7" fill="#bae6fd" opacity="0.75"/>
+            <circle class="twinkle-mid" cx="460" cy="186" r="2.2" fill="#ffffff" opacity="0.8"/>
+            <circle class="twinkle-slow" cx="354" cy="172" r="1.6" fill="#fef08a" opacity="0.7"/>
+            <circle class="twinkle-mid" cx="266" cy="216" r="2" fill="#e0f2fe" opacity="0.75"/>
+            <circle class="twinkle-slow" cx="150" cy="232" r="1.8" fill="#ffffff" opacity="0.65"/>
+
+            <!-- Smaller 4-point sparkle stars around the shooting star -->
+            <g transform="translate(104, 66) scale(0.85)" style="color: #fef08a;" class="twinkle-mid">
+                <use href="#sparkleStar"/>
+            </g>
+            <g transform="translate(202, 58) scale(1.0)" style="color: #ffffff;" class="twinkle-slow">
+                <use href="#sparkleStar"/>
+            </g>
+            <g transform="translate(138, 146) scale(0.75)" style="color: #7dd3fc;" class="twinkle-mid">
+                <use href="#sparkleStar"/>
+            </g>
+            <g transform="translate(296, 70) scale(0.7)" style="color: #fde047;" class="twinkle-slow">
+                <use href="#sparkleStar"/>
+            </g>
+            <g transform="translate(480, 104) scale(0.9)" style="color: #fef9c3;" class="twinkle-mid">
+                <use href="#sparkleStar"/>
+            </g>
+            <g transform="translate(412, 166) scale(0.8)" style="color: #ffffff;" class="twinkle-slow">
+                <use href="#sparkleStar"/>
+            </g>
+            <g transform="translate(308, 192) scale(0.85)" style="color: #bae6fd;" class="twinkle-mid">
+                <use href="#sparkleStar"/>
+            </g>
+            <g transform="translate(206, 206) scale(0.65)" style="color: #fde047;" class="twinkle-slow">
+                <use href="#sparkleStar"/>
+            </g>
+
+            <!-- Main Shooting Star -->
+            <g>
+                <!-- Wide outer glow trail -->
+                <path d="M55 235 Q235 158 418 76" stroke="url(#shootingTailGlow)" stroke-width="20" stroke-linecap="round"/>
+                <!-- Core bright shooting star tail -->
+                <path d="M75 225 Q242 152 418 76" stroke="url(#shootingTailMain)" stroke-width="5.5" stroke-linecap="round" filter="url(#glowFilter)"/>
+                <!-- Secondary sparkle lines -->
+                <path d="M170 194 Q290 140 398 94" stroke="#bae6fd" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 9" opacity="0.75"/>
+                <path d="M198 164 Q300 118 392 75" stroke="#fef08a" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="4 11" opacity="0.65"/>
+
+                <!-- Small sparks near head -->
+                <circle cx="366" cy="99" r="2.5" fill="#fef08a" opacity="0.9"/>
+                <circle cx="336" cy="113" r="2" fill="#ffffff" opacity="0.85"/>
+                <circle cx="300" cy="128" r="1.7" fill="#7dd3fc" opacity="0.8"/>
+
+                <!-- Halo around head -->
+                <circle cx="418" cy="76" r="40" fill="url(#starHeadGlow)"/>
+
+                <!-- Shooting star head at (418, 76) -->
+                <g transform="translate(418, 76)" filter="url(#glowFilter)">
+                    <path d="M0 -16 L3.5 -3.5 L16 0 L3.5 3.5 L0 16 L-3.5 3.5 L-16 0 L-3.5 -3.5 Z"
+                          transform="rotate(45)" fill="#fde047" opacity="0.85"/>
+                    <path d="M0 -25 C3 -6, 6 -3, 25 0 C6 3, 3 6, 0 25 C-3 6, -6 3, -25 0 C-6 -3, -3 -6, 0 -25 Z"
+                          fill="#ffffff"/>
+                    <circle cx="0" cy="0" r="5" fill="#fef9c3"/>
+                </g>
+            </g>
+        </svg>
+    </div>
+
+    <div class="hero-copy">
+        <span class="hero-eyebrow"><i class="bi bi-stars"></i> ØnskeSkyen</span>
+        <h1 class="hero-title">Hold styr på dine ønsker ét sted</h1>
+        <p class="hero-description">
+            Opret og organisér dine ønsker med priser og tags, så familie og venner nemt kan se og reservere dem.
+            Brug <strong>QuickWish</strong>, når du hurtigt vil gemme et ønske.
+        </p>
+        <div class="hero-actions">
+            <a th:href="@{/quickwish}" class="btn-quickwish">
+                <span>QuickWish</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+            <a th:href="@{/addWish}" class="btn-secondary-hero">
+                <span>Tilføj ønske</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
