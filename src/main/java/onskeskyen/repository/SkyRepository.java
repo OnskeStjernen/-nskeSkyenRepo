@@ -1,6 +1,7 @@
 package onskeskyen.repository;
 
 import jakarta.servlet.http.HttpSession;
+import onskeskyen.model.Wish;
 import onskeskyen.model.UserDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,6 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -66,8 +72,9 @@ public class SkyRepository {
 
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    public int loginCheck(String username, String password, HttpSession session,String email) {
-        if(conditionCheck(username, password,email)) return -1;
+
+    public int loginCheck(String username, String password, HttpSession session, String email) {
+        if (conditionCheck(username, password, email)) return -1;
 
         String sql = "SELECT * FROM users WHERE username = ?";
         List<Map<String, Object>> rows = db.queryForList(sql, username);
@@ -85,25 +92,24 @@ public class SkyRepository {
 
     }
 
-    public int registerCheck(String username, String password,String email) {
+    public int registerCheck(String username, String password, String email) {
         System.out.println("repo called" + " " + username);
 
-        if(conditionCheck(username, password,email)) return -1;
+        if (conditionCheck(username, password, email)) return -1;
 
         String sql = "SELECT * FROM users WHERE userName = ?";
         List<Map<String, Object>> rows = db.queryForList(sql, username);
         String secureHash = passwordEncoder.encode(password);
         if (rows.isEmpty()) {
             String insert = "INSERT INTO users (userName, password,email) VALUES (?, ?,?)";
-            db.update(insert, username, secureHash,email);
+            db.update(insert, username, secureHash, email);
             return 1;
-
         }
         System.out.println("rows found!!");
         return -1;
-
     }
-    private boolean conditionCheck(String username, String password,String email) {
+
+    private boolean conditionCheck(String username, String password, String email) {
         if (username == null || username.trim().isEmpty()) {
             System.out.println("username");
             return true;
@@ -118,5 +124,43 @@ public class SkyRepository {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public Wish addQuickWish(int userId, String name, int price, List<String> tags) {
+        String insertWishSql = "INSERT INTO wish (name, price) VALUES (?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        db.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(insertWishSql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, name);
+            ps.setInt(2, price);
+            return ps;
+        }, keyHolder);
+
+        int exactWishId = keyHolder.getKey().intValue();
+
+        String insertLinkSql = "INSERT INTO userWishes (user_id, wish_id) VALUES (?, ?)";
+        db.update(insertLinkSql, userId, exactWishId);
+
+        return new Wish(exactWishId, name, price, tags);
+    }
+
+    public ArrayList<Wish> getWishesByUserId(int userId) {
+        String selectWishesSql = """
+                SELECT w.wish_id, w.name, w.price
+                FROM wish w
+                JOIN userWishes uw ON w.wish_id = uw.wish_id
+                WHERE uw.user_id = ?
+                """;
+
+        List<Wish> wishes = db.query(selectWishesSql, (rs, rowNum) -> new Wish(
+                rs.getInt("wish_id"),
+                rs.getString("name"),
+                rs.getInt("price"),
+                new ArrayList<>()
+        ), userId);
+
+        return new ArrayList<>(wishes);
     }
 }
