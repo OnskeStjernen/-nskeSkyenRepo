@@ -1,0 +1,14 @@
+.largecontainer{
+    box-sizing: border-box;
+    color: rgb(33,37,41);
+    display: inline-block;
+    font-family:  sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height:21px;
+    max-width: 100%;
+    position: relative;
+    text-align: start;
+    text-size-adjust: 100%;
+    width:75px;
+}
