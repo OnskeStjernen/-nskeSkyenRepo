@@ -1,6 +1,7 @@
 package onskeskyen.service;
 
 import jakarta.servlet.http.HttpSession;
+import onskeskyen.model.UserDTO;
 import onskeskyen.repository.SkyRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,11 @@ public class SkyService {
     public SkyService(SkyRepository skyRepository) {
         this.skyRepository = skyRepository;
     }
+
+    public void addWish(UserDTO userDTO, HttpSession sessions) {
+        this.skyRepository.addWish(userDTO, sessions);
+    }
+
     public int checkLogin(String username, String password, HttpSession session,String email){
         return skyRepository.loginCheck(username,password,session,email);
     }

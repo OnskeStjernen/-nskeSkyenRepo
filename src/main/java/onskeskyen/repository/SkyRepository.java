@@ -1,9 +1,16 @@
 package onskeskyen.repository;
 
 import jakarta.servlet.http.HttpSession;
+import onskeskyen.model.UserDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +22,49 @@ public class SkyRepository {
     public SkyRepository(JdbcTemplate db) {
         this.db = db;
     }
+
+    @Transactional
+    public int addWish(UserDTO userDTO, HttpSession session) {
+
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return -1;
+        }
+
+        String sqlWish = """
+                INSERT INTO wish (name, price)
+                VALUES(?, ?)
+                """;
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        db.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sqlWish, Statement.RETURN_GENERATED_KEYS);
+
+            ps.setString(1, userDTO.getName());
+            ps.setDouble(2, userDTO.getPrice());
+
+            return ps;
+        }, keyHolder);
+
+        Number wishID = keyHolder.getKey();
+
+        if(wishID == null) {
+            throw new IllegalStateException("Could not retrieve the wish id");
+        }
+
+        String sqlUserWishes = """
+                INSERT INTO UserWishes (user_id, wish_id) 
+                VALUES (?, ?)
+                """;
+
+
+        return db.update(sqlUserWishes, userID, wishID.intValue());
+    }
+
+
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     public int loginCheck(String username, String password, HttpSession session,String email) {
         if(conditionCheck(username, password,email)) return -1;
