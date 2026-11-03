@@ -17,10 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SkyController {
     private final SkyService skyservice;
 
+
+    @GetMapping("/")
+    public String home() {
+        return "Homepage";
+    }
+
     public SkyController(SkyService skyservice) {
         this.skyservice = skyservice;
     }
-
     @GetMapping("/addWish")
     public String addWish(Model model) {
         UserDTO userWish = new UserDTO();
