@@ -87,22 +87,6 @@
             </div>
         </div>
 
-        <!-- Bento Box 2: QuickWish Action Card -->
-        <div class="bento-card" th:each="wish : ${wishes}">
-            <div class="bento-card-header">
-                <div>
-                    <h2 th:text="${item.name}">QuickWish</h2>
-                </div>
-            </div>
-            <p class="bento-text">
-                Gem et ønske med det samme uden at udfylde hele formularen. Du kan altid tilføje flere detaljer og tags bagefter.
-            </p>
-            <form th:action="@{/quickAddWish}" method="post" style="display: inline;">
-                <input type="hidden" name="name" value="Støjreducerende høretelefoner">
-                <input type="hidden" name="price" value="1899">
-                <button type="submit" class="btn-bento-outline">Add</button>
-            </form>
-        </div>
 
         <!-- Bento Box 2: QuickWish Action Card -->
         <div class="bento-card">
