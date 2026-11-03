@@ -29,7 +29,7 @@ public class SkyService {
         if (result == 1) {
             Integer userId = (Integer) session.getAttribute("user_id");
             if (userId != null) {
-                flushSessionWishesToDb(userId, session);
+                getSessionWishesToDb(userId, session);
             }
         }
         return result;
@@ -59,7 +59,7 @@ public class SkyService {
     public ArrayList<Wish> getQuickWishes(HttpSession session) {
         Integer userId = (Integer) session.getAttribute("user_id");
         if (userId != null) {
-            flushSessionWishesToDb(userId, session);
+            getSessionWishesToDb(userId, session);
             return skyRepository.getWishesByUserId(userId);
         }
 
@@ -68,7 +68,7 @@ public class SkyService {
     }
 
     @SuppressWarnings("unchecked")
-    private void flushSessionWishesToDb(int userId, HttpSession session) {
+    private void getSessionWishesToDb(int userId, HttpSession session) {
         ArrayList<Wish> sessionWishes = (ArrayList<Wish>) session.getAttribute("quickWishes");
         if (sessionWishes != null && !sessionWishes.isEmpty()) {
             for (Wish wish : sessionWishes) {
