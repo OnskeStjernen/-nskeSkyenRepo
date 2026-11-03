@@ -55,12 +55,32 @@ public class SkyRepository {
         }
 
         String sqlUserWishes = """
-                INSERT INTO UserWishes (user_id, wish_id) 
+                INSERT INTO userWishes (user_id, wish_id) 
                 VALUES (?, ?)
                 """;
 
+        db.update(sqlUserWishes, userID, wishID.intValue());
 
-        return db.update(sqlUserWishes, userID, wishID.intValue());
+
+        String sqlTag = """
+                SELECT tag_id
+                FROM tags
+                WHERE tag_name = ?
+                """;
+
+        String sqlTagsWish = """
+               INSERT INTO tagsWish (tag_id, wish_id)
+               VALUES (?,?)              
+               """;
+
+        for(String tag : userDTO.getTags()) {
+
+            Integer tagID = db.queryForObject(sqlTag, Integer.class, tag);
+
+            db.update(sqlTagsWish, tagID, wishID.intValue());
+        }
+
+        return 1;
     }
 
 
