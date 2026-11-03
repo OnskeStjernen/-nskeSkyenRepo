@@ -41,9 +41,17 @@ public class SkyController {
     }
 
     @PostMapping("/saveWish")
-    public String saveWish(@ModelAttribute UserDTO userWish) {
+    public String saveWish(@ModelAttribute UserDTO userDTO, HttpSession session) {
 
-        return "redirect:/";
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return "redirect:/login";
+        }
+
+        skyservice.addWish(userDTO, session);
+
+        return "redirect:/homepage";
     }
 
     //TODO getMapping for /login og /register
