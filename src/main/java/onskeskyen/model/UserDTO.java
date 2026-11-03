@@ -1,20 +1,21 @@
 package onskeskyen.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserDTO {
 
     private int userID;
     private String email;
-    private int wishID;
+    private ArrayList<Wish> wish;
     private String name;
     private float price;
     private List<String> tags;
 
-    public UserDTO(int userID, String email, int wishID, String name, float price, List<String> tags) {
+    public UserDTO(int userID, String email, ArrayList<Wish> wish, String name, float price, List<String> tags) {
         this.userID = userID;
         this.email = email;
-        this.wishID = wishID;
+        this.wish = wish;
         this.name = name;
         this.price = price;
         this.tags = tags;
@@ -32,8 +33,8 @@ public class UserDTO {
         return email;
     }
 
-    public int getWishID() {
-        return wishID;
+    public ArrayList<Wish> getWish() {
+        return wish;
     }
 
     public String getName() {
@@ -56,8 +57,8 @@ public class UserDTO {
         this.email = email;
     }
 
-    public void setWishID(int wishID) {
-        this.wishID = wishID;
+    public void setWish(ArrayList<Wish> wish) {
+        this.wish = wish;
     }
 
     public void setName(String name) {

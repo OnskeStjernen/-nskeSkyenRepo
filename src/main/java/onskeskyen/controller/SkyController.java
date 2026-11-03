@@ -3,6 +3,9 @@ package onskeskyen.controller;
 
 import jakarta.servlet.http.HttpSession;
 import onskeskyen.model.UserDTO;
+
+import onskeskyen.model.Wish;
+import onskeskyen.model.WishList;
 import onskeskyen.service.SkyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
@@ -26,6 +32,7 @@ public class SkyController {
     public SkyController(SkyService skyservice) {
         this.skyservice = skyservice;
     }
+
     @GetMapping("/addWish")
     public String addWish(Model model) {
         UserDTO userWish = new UserDTO();
@@ -35,9 +42,17 @@ public class SkyController {
     }
 
     @PostMapping("/saveWish")
-    public String saveWish(@ModelAttribute UserDTO userWish) {
+    public String saveWish(@ModelAttribute UserDTO userDTO, HttpSession session) {
 
-        return "redirect:/";
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return "redirect:/login";
+        }
+
+        skyservice.addWish(userDTO, session);
+
+        return "redirect:/homepage";
     }
 
     //TODO getMapping for /login og /register
@@ -67,6 +82,22 @@ public class SkyController {
         }
         //TODO TEMP
         return null;
+    }
+
+    @GetMapping({"/quickwish", "/quickWish", "/QuickWish"})
+    public String quickAdd(ModelMap model, HttpSession session) {
+        ArrayList<Wish> wishItems = skyservice.getQuickWishes(session);
+        model.addAttribute("wishes", wishItems);
+        return "QuickWish";
+    }
+
+    @PostMapping("/quickAddWish")
+    public String quickAddWish(@RequestParam String name,
+                               @RequestParam int price,
+                               @RequestParam(required = false) List<String> tags,
+                               HttpSession session) {
+        skyservice.addQuickWish(name, price, tags, session);
+        return "redirect:/quickwish";
     }
 
 }

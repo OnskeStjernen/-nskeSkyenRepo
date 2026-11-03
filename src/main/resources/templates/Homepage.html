@@ -1,20 +1,149 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard · Aide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ØnskeSkyen · Forside</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-
     <link th:href="@{/styles.css}" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
-<body>
+<body class="bento-page-body">
+
+<!-- Grounded, clean top navigation bar -->
+<header class="bento-header-wrapper">
+    <nav class="bento-nav" aria-label="Hovednavigation">
+        <a th:href="@{/}" class="bento-brand">
+            <span class="bento-brand-mark"><i class="bi bi-stars"></i></span>
+            <span>ØnskeSkyen</span>
+        </a>
+
+        <div class="bento-nav-links">
+            <a th:href="@{/}" class="bento-nav-item active">Forside</a>
+            <a href="#mine-onsker" class="bento-nav-item">Mine ønsker</a>
+            <a th:href="@{/addWish}" class="bento-nav-item">Tilføj ønske</a>
+            <a href="#bento-tags" class="bento-nav-item">Tags</a>
+        </div>
+
+        <div class="bento-nav-actions">
+            <a th:href="@{/login}" class="bento-login-link">Log ind</a>
+            <a th:href="@{/quickwish}" class="bento-quickwish-btn">QuickWish</a>
+        </div>
+    </nav>
+</header>
+
+<main class="bento-main-container">
+
+    <!-- Large Shooting Star Hero Rectangle -->
+    <div th:replace="~{fragments/hero :: shootingStarHero}"></div>
+
+    <!-- Grounded Bento Grid -->
+    <section class="bento-grid" id="mine-onsker">
+
+        <!-- Bento Box 1 (Wide): Active Wishes Overview Table/List -->
+        <div class="bento-card bento-span-2">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Overblik</span>
+                    <h2>Seneste ønsker</h2>
+                </div>
+                <a th:href="@{/addWish}" class="bento-header-link">+ Nyt ønske</a>
+            </div>
+
+            <div class="bento-wish-list">
+                <div class="bento-wish-row">
+                    <div class="bento-wish-info">
+                        <span class="bento-wish-name">Støjreducerende høretelefoner</span>
+                        <span class="bento-wish-meta">Elektronik · Tilføjet i dag</span>
+                    </div>
+                    <div class="bento-wish-right">
+                        <span class="bento-wish-price">1.899 kr.</span>
+                        <span class="bento-status status-open">Ledig</span>
+                    </div>
+                </div>
+
+                <div class="bento-wish-row">
+                    <div class="bento-wish-info">
+                        <span class="bento-wish-name">Støbejernsgryde 4,2 L</span>
+                        <span class="bento-wish-meta">Bolig · Tilføjet i går</span>
+                    </div>
+                    <div class="bento-wish-right">
+                        <span class="bento-wish-price">1.150 kr.</span>
+                        <span class="bento-status status-reserved">Reserveret</span>
+                    </div>
+                </div>
+
+                <div class="bento-wish-row">
+                    <div class="bento-wish-info">
+                        <span class="bento-wish-name">Løbesko</span>
+                        <span class="bento-wish-meta">Sport · Tilføjet 3 dage siden</span>
+                    </div>
+                    <div class="bento-wish-right">
+                        <span class="bento-wish-price">950 kr.</span>
+                        <span class="bento-status status-open">Ledig</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
+        <!-- Bento Box 2: QuickWish Action Card -->
+        <div class="bento-card">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Hurtig oprettelse</span>
+                    <h2>QuickWish</h2>
+                </div>
+            </div>
+            <p class="bento-text">
+                Gem et ønske med det samme uden at udfylde hele formularen. Du kan altid tilføje flere detaljer og tags bagefter.
+            </p>
+            <div class="bento-card-footer">
+                <a th:href="@{/quickwish}" class="btn-bento-primary">Åbn QuickWish</a>
+                <a th:href="@{/addWish}" class="btn-bento-outline">Standard formular</a>
+            </div>
+        </div>
 
+        <!-- Bento Box 3: Tags / Categories -->
+        <div class="bento-card" id="bento-tags">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Kategorier</span>
+                    <h2>Tags</h2>
+                </div>
+            </div>
+            <p class="bento-text">Filtrér og gruppér dine ønsker efter kategori:</p>
+            <div class="tag-cloud">
+                <span class="sky-tag">Bolig</span>
+                <span class="sky-tag">Elektronik</span>
+                <span class="sky-tag">Bøger</span>
+                <span class="sky-tag">Tøj &amp; Sko</span>
+                <span class="sky-tag">Oplevelser</span>
+                <span class="sky-tag">Sport</span>
+                <span class="sky-tag">Køkken</span>
+            </div>
+        </div>
+
+        <!-- Bento Box 4 (Wide): Reservation & Sharing Info -->
+        <div class="bento-card bento-span-2">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Deling &amp; Reservation</span>
+                    <h2>Undgå dobbeltkøb</h2>
+                </div>
+            </div>
+            <div class="bento-split-row">
+                <p class="bento-text mb-0">
+                    Når du deler din ønskeliste, kan familie og venner markere et ønske som reserveret, så to personer ikke køber den samme gave.
+                </p>
+                <a th:href="@{/login}" class="btn-bento-outline flex-shrink-0">Log ind på din konto</a>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
