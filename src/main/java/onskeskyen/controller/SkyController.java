@@ -23,13 +23,14 @@ import java.util.List;
 public class SkyController {
     private final SkyService skyservice;
 
-    public SkyController(SkyService skyservice) {
-        this.skyservice = skyservice;
+
+    @GetMapping("/")
+    public String home() {
+        return "Homepage";
     }
 
-    @GetMapping({"/", "/homepage"})
-    public String homepage() {
-        return "Homepage";
+    public SkyController(SkyService skyservice) {
+        this.skyservice = skyservice;
     }
 
     @GetMapping("/addWish")
