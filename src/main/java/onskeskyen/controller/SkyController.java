@@ -54,18 +54,18 @@ public class SkyController {
         return "redirect:/homepage";
     }
 
-    //TODO getMapping for /login og /register
+
 
     @PostMapping("/login")
     public String login(@RequestParam(required = false) String username, @RequestParam(required = false) String password,@RequestParam(required = false) String email, HttpSession session, ModelMap model){
         if(skyservice.checkLogin(username,password,session,email) == 1) {
             model.addAttribute("username", username);
-            //return getAllAttractions(model);
-        }else{
-            //return apology(model);
+            System.out.println("login succsess");
+            return "redirect:/homepage";
+        }else {
+            System.out.println("login failed");
+            return "redirect:/homepage";
         }
-        //TODO TEMP
-        return null;
     }
 
     @PostMapping("/register")
@@ -73,14 +73,23 @@ public class SkyController {
         if(skyservice.registerLogin(username,password,email) == 1) {
             System.out.println("user made");
             model.addAttribute("username", username);
-            //return "login";
+            return "login";
         }else{
             System.out.println("error");
             model.addAttribute("error", "Username already taken");
-            //return apology(model);
+            return "redirect:/homepage";
         }
-        //TODO TEMP
-        return null;
+    }
+
+    @GetMapping("/login")
+    public String getLogin(ModelMap modelMap){
+        return "login";
+    }
+
+    @GetMapping("/register")
+    public String getRegister(ModelMap modelMap){
+
+        return "register";
     }
 
     @GetMapping({"/quickwish", "/quickWish", "/QuickWish"})

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+          crossorigin="anonymous"></script>
+  <link href="/styles.css" rel="stylesheet">
+  <title>getall</title>
+  <link rel="icon" type="image/x-icon" href="/images/img.png">
+
+</head>
+<body>
+
+<main>
+  <form action="#" th:action="@{/register}" th:object="${register}" method="post" class="register-form">
+    <div class="mb-3">
+      <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username"  type="text">
+    </div>
+    <div>
+      <input class="form-control mx-auto w-auto" name="email" type="email">
+    </div>
+    <div>
+      <input class="form-control mx-auto w-auto" name="password" type="password">
+    </div>
+    <button class="login-register" type="submit">Register</button>
+  </form>
+</main>
+
+</body>
+</html>
