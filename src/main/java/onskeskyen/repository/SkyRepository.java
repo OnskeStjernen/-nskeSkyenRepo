@@ -153,8 +153,10 @@ public class SkyRepository {
         int exactWishId = keyHolder.getKey().intValue();
 
         String insertLinkSql = "INSERT INTO userWishes (user_id, wish_id) VALUES (?, ?)";
-        db.update(insertLinkSql, userId, exactWishId);
 
+        db.update(insertLinkSql, userId, exactWishId);
+        String updatecount = "UPDATE wishcounter SET wish_count = wish_count + 1 WHERE wish_id = ?";
+        db.update(updatecount,exactWishId);
         return new Wish(exactWishId, name, price, tags);
     }
 
@@ -174,5 +176,32 @@ public class SkyRepository {
         ), userId);
 
         return new ArrayList<>(wishes);
+    }
+    public boolean checkEmail(String email){
+        String sql = "SELECT email FROM users WHERE email = ?";
+        List<Map<String, Object>> rows = db.queryForList(sql, email);
+        return !rows.isEmpty();
+
+    }
+    @Transactional
+    public boolean ShareWish(String name,int price,List<String> tags,String email){
+        String insertWishSql = "INSERT INTO wish (name, price) VALUES (?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        db.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(insertWishSql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, name);
+            ps.setInt(2, price);
+            return ps;
+        }, keyHolder);
+
+        int exactWishId = keyHolder.getKey().intValue();
+
+        String insertLinkSql = "INSERT INTO userWishes (user_id, wish_id) VALUES (?, ?)";
+
+        db.update(insertLinkSql, userId, exactWishId);
+        String updatecount = "UPDATE wishcounter SET wish_count = wish_count + 1 WHERE wish_id = ?";
+        db.update(updatecount,exactWishId);
+        return new Wish(exactWishId, name, price, tags);
     }
 }

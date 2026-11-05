@@ -34,7 +34,12 @@ public class SkyController {
     }
 
     @GetMapping("/addWish")
-    public String addWish(Model model) {
+    public String addWish(Model model, HttpSession session) {
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return "redirect:/login";
+        }
         UserDTO userWish = new UserDTO();
         model.addAttribute("addedUserWish", userWish);
         model.addAttribute("allTags");
@@ -52,9 +57,24 @@ public class SkyController {
 
         skyservice.addWish(userDTO, session);
 
-        return "redirect:/homepage";
+        return "redirect:/";
     }
 
+    @PostMapping("/quickShareWish")
+    public String quickShareWish(@RequestParam String name,
+                                 @RequestParam int price,
+                                 @RequestParam(required = false) List<String> tags,
+                                 @RequestParam String email,HttpSession session){
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return "redirect:/login";
+        }
+
+        skyservice.quickShareService(name,price,tags,email);
+
+
+    }
 
 
     @PostMapping("/login")
@@ -62,10 +82,10 @@ public class SkyController {
         if(skyservice.checkLogin(username,password,session,email) == 1) {
             model.addAttribute("username", username);
             System.out.println("login succsess");
-            return "redirect:/homepage";
+            return "redirect:/";
         }else {
             System.out.println("login failed");
-            return "redirect:/homepage";
+            return "redirect:/";
         }
     }
 

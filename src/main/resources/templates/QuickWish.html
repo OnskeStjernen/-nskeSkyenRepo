@@ -44,6 +44,36 @@
                 </div>
             </div>
 
+            <!-- Quick Add Form -->
+            <div class="col-12 col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form id="quickShareForm" th:action="@{/quickShareWish}" method="post">
+                            <fieldset>
+                                <legend class="h5 card-title mb-3">Share et eller flere ønsker</legend>
+                                <div class="mb-3">
+                                    <label for="ShareName" class="form-label">Ønske (påkrævet)</label>
+                                    <input id="ShareName" name="name" type="text" class="form-control" placeholder="F.eks. Støjreducerende høretelefoner" maxlength="100" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="SharePrice" class="form-label">Pris i kr. (påkrævet)</label>
+                                    <input id="SharePrice" name="price" type="number" min="0" inputmode="numeric" class="form-control" placeholder="F.eks. 1899" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ShareTags" class="form-label">Tags / Link (valgfri)</label>
+                                    <input id="ShareTags" name="tags" type="text" class="form-control" placeholder="F.eks. Elektronik">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="Email" class="form-label">Email of reciver</label>
+                                    <input id="Email" name="email" type="Email" class="form-control" placeholder="F.eks. xxxx@gmail.com">
+                                </div>
+                                <button id="quickShareSubmitBtn" type="submit" class="btn btn-primary w-100">Share ønske</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Wishes Table -->
             <div class="col-12 col-lg-7">
                 <table class="table table-striped table-hover align-middle">
@@ -67,6 +97,7 @@
                     </tbody>
                 </table>
             </div>
+
         </div>
     </div>
 </main>
