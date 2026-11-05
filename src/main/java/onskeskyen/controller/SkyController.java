@@ -81,7 +81,7 @@ public class SkyController {
         return "allWishesByUserID";
     }
 
-    //TODO getMapping for /login og /register
+
 
     @PostMapping("/login")
     public String login(@RequestParam(required = false) String username, @RequestParam(required = false) String password,@RequestParam(required = false) String email, HttpSession session, ModelMap model){
