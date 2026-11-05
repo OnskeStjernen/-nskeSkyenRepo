@@ -32,6 +32,9 @@ public class SkyService {
             }
         }
         return result;
+
+    }
+
     public void editWish(Wish wish, HttpSession session) {
         this.skyRepository.editWish(wish, session);
     }
@@ -48,9 +51,6 @@ public class SkyService {
         return skyRepository.allTags();
     }
 
-    public int checkLogin(String username, String password, HttpSession session,String email){
-        return skyRepository.loginCheck(username,password,session,email);
-    }
 
     public int registerLogin(String username, String password, String email) {
         System.out.println("service called");

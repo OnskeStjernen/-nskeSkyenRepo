@@ -93,8 +93,6 @@ public class SkyController {
             System.out.println("login failed");
             return "redirect:/homepage";
         }
-        //TODO TEMP
-        return null;
     }
 
     @PostMapping("/register")
@@ -108,8 +106,6 @@ public class SkyController {
             model.addAttribute("error", "Username already taken");
             return "redirect:/homepage";
         }
-        //TODO TEMP
-        return null;
     }
 
     @GetMapping("/login")
