@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>updateWish</title>
+</head>
+<body>
+
+<h1>Opdater ønske</h1>
+
+<form th:action="@{/update}" th:object="${editedWish}" method="POST">
+    <label for="name"> Navn: </label>
+    <input id="name" type="text" th:field="*{name}">
+
+    <label for="price"> Pris:</label>
+    <input id="price" type="number" th:field="*{price}">
+
+    <label th:each="t : ${allTags}">
+        <input type="checkbox" th:field="*{tags}" th:text="${t}" th:value="${t}">
+    </label>
+
+    <button type="submit"> OK</button>
+
+</form>
+
+</body>
+</html>

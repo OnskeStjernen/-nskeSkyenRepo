@@ -15,7 +15,7 @@ public class Wish {
         this.tags = tags;
     }
 
-    public int getID() {
+    public int getWishID() {
         return wishID;
     }
 

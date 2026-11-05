@@ -25,6 +25,32 @@ public class SkyRepository {
         this.db = db;
     }
 
+    public List<Wish> getAllWishes(HttpSession session) {
+
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            throw new IllegalArgumentException("could not find user information");
+        }
+
+        String sql = """
+               SELECT w.wish_id, w.name, w.price
+               FROM wish w
+               JOIN userWishes uw ON uw.wish_id = w.wish_id
+               WHERE uw.user_id = ?
+                """;
+
+        List<Wish> wishes = db.query(sql, (rs, rowNum) -> new Wish(
+                rs.getInt("wish_id"),
+                rs.getString("name"),
+                rs.getFloat("price"),
+                getTagsByWishID(rs.getInt("wish_id"), session)
+
+        ), userID);
+
+       return wishes;
+    }
+
     @Transactional
     public int addWish(UserDTO userDTO, HttpSession session) {
 
@@ -85,6 +111,129 @@ public class SkyRepository {
         return 1;
     }
 
+    @Transactional
+    public int editWish(Wish w, HttpSession session) {
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return -1;
+        }
+
+        String sqlEditWish = """
+                UPDATE wish
+                SET name = ?, price = ?
+                WHERE wish_id = ?
+                AND EXISTS (
+                    SELECT 1
+                    FROM userWishes
+                    WHERE userWishes.wish_id = wish.wish_id
+                    AND userWishes.user_id = ?
+                ) 
+                """;
+
+        updateTag(w);
+
+        return db.update(sqlEditWish, w.getName(), w.getPrice(), w.getWishID(), userID);
+    }
+
+    @Transactional
+    public void updateTag(Wish w) {
+        int wishID = w.getWishID();
+
+        String deleteTags = """
+                DELETE FROM tagsWish
+                WHERE wish_id = ?
+                """;
+        db.update(deleteTags, wishID);
+
+        String insertTags = """
+                INSERT INTO tagsWish (tag_id, wish_id)
+                SELECT tag_id, ?
+                FROM tags
+                WHERE tag_name = ?
+                """;
+
+        for(String tag_name : w.getTags()) {
+            int rows = db.update(insertTags, wishID, tag_name);
+
+            if(rows != 1) {
+                throw new IllegalArgumentException("Tag not found " + tag_name);
+            }
+        }
+    }
+
+    public List<Wish> allWishesByUserID(HttpSession session) {
+
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            throw new IllegalArgumentException("can not retrieve user information");
+        }
+
+        String sql = """
+                SELECT wish_id, name, price 
+                FROM wish w
+                JOIN userWishes uw ON w.wish_id = uw.wish_id
+                WHERE uw.user_id = ?
+                """;
+
+        return db.query(sql, (rs, rowNum) -> new Wish(
+                rs.getInt("wish_id"),
+                rs.getString("name"),
+                rs.getFloat("price"),
+                getTagsByWishID(rs.getInt("wish_id"), session)
+        ), userID);
+    }
+
+    public Wish getWishByID(int wishID, HttpSession session) {
+
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            throw new IllegalArgumentException("Could not retrive user information");
+        }
+
+        String sql = """
+                SELECT wish_id, name, price
+                FROM wish w
+                JOIN userWishes uw ON uw.wish_id = w.wish_id 
+                JOIN user u ON u.user_id = uw.user_id
+                WHERE w.wish_id = ? AND uw.user_id = ?
+                """;
+
+        return db.queryForObject(sql, (rs, rowNun) -> new Wish(
+                rs.getInt("wish_id"),
+                rs.getString("name"),
+                rs.getFloat("price"),
+                getTagsByWishID(rs.getInt("wish_id"), session)
+        ), wishID, userID);
+    }
+
+    public List<String> getTagsByWishID(int wishID, HttpSession session) {
+
+        String sql = """
+                SELECT tag_name
+                FROM tags t
+                JOIN tagsWish tw ON tw.tag_id = t.tag_id
+                WHERE wish_id = ?               
+                """;
+
+        return db.query(sql, (rs, rowNum) -> rs.getString("tag_name"), wishID);
+    }
+
+    public List<String> allTags() {
+
+        String sql = """
+                SELECT tag_name
+                FROM tags           
+                """;
+
+        List<String> tags = db.query(sql, (rs, rowNum) ->
+                rs.getString("tag_name"));
+
+        return tags;
+    }
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public int loginCheck(String username, String password, HttpSession session, String email) {
@@ -101,7 +250,9 @@ public class SkyRepository {
 
         session.setAttribute("user_id", userId);
 
+
         return 1;
+
     }
 
     public int registerCheck(String username, String password, String email) {
@@ -116,9 +267,11 @@ public class SkyRepository {
             String insert = "INSERT INTO users (userName, password,email) VALUES (?, ?,?)";
             db.update(insert, username, secureHash, email);
             return 1;
+
         }
         System.out.println("rows found!!");
         return -1;
+
     }
 
     private boolean conditionCheck(String username, String password, String email) {

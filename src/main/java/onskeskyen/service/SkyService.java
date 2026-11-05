@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.List;
+
 @Service
 public class SkyService {
     private final SkyRepository skyRepository;
@@ -30,6 +32,24 @@ public class SkyService {
             }
         }
         return result;
+    public void editWish(Wish wish, HttpSession session) {
+        this.skyRepository.editWish(wish, session);
+    }
+
+    public Wish getWishByID(int wishID, HttpSession session) {
+        return skyRepository.getWishByID(wishID, session);
+    }
+
+    public List<Wish> allWishesByUserID(HttpSession session) {
+        return skyRepository.allWishesByUserID(session);
+    }
+
+    public List<String> allTags() {
+        return skyRepository.allTags();
+    }
+
+    public int checkLogin(String username, String password, HttpSession session,String email){
+        return skyRepository.loginCheck(username,password,session,email);
     }
 
     public int registerLogin(String username, String password, String email) {
