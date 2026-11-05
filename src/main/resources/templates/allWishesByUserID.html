@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"
+xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>allWishesByUserID</title>
+</head>
+<body>
+
+<tabel>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Tags</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="wish : ${allWishes}">
+        <td th:text="${wish.name}"></td>
+        <td th:text="${wish.price}"></td>
+        <td th:text="${wish.tags}"></td>
+
+    </tr>
+    </tbody>
+
+</tabel>
+
+
+</body>
+</html>

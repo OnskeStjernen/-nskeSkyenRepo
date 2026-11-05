@@ -3,14 +3,12 @@ package onskeskyen.controller;
 
 import jakarta.servlet.http.HttpSession;
 import onskeskyen.model.UserDTO;
+import onskeskyen.model.Wish;
 import onskeskyen.service.SkyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
@@ -41,6 +39,34 @@ public class SkyController {
         skyservice.addWish(userDTO, session);
 
         return "redirect:/homepage";
+    }
+
+    @GetMapping("/{wishID}/edit")
+    public String editWish(Model model, @PathVariable int wishID, HttpSession session) {
+
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("editedWish", skyservice.getWishByID(wishID, session));
+        model.addAttribute("allTags", skyservice.allTags());
+
+        return "updateWish";
+    }
+
+    @PostMapping("/ypdate")
+    public String updateWish(@ModelAttribute Wish wish, HttpSession session) {
+        skyservice.editWish(wish, session);
+        return "redirect:/Homepage";
+    }
+
+    @GetMapping("/allWishes")
+    public String allWishes(Model model, HttpSession session) {
+        model.addAttribute("allWishes", skyservice.allWishesByUserID(session));
+
+        return "allWishesByUserID";
     }
 
     //TODO getMapping for /login og /register
