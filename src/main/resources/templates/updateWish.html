@@ -11,19 +11,24 @@
 <h1>Opdater ønske</h1>
 
 <form th:action="@{/update}" th:object="${editedWish}" method="POST">
+
+    <input type="hidden" th:field="*{wishID}">
+
     <label for="name"> Navn: </label>
     <input id="name" type="text" th:field="*{name}">
-
+    <br>
     <label for="price"> Pris:</label>
     <input id="price" type="number" th:field="*{price}">
-
+    <br>
     <label th:each="t : ${allTags}">
         <input type="checkbox" th:field="*{tags}" th:text="${t}" th:value="${t}">
     </label>
-
+    <br>
     <button type="submit"> OK</button>
 
 </form>
+
+<a th:href="@{/allWishes}">Fortryd</a>
 
 </body>
 </html>

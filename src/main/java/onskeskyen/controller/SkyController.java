@@ -6,6 +6,7 @@ import onskeskyen.model.UserDTO;
 
 import onskeskyen.model.Wish;
 import onskeskyen.model.WishList;
+import onskeskyen.model.Wish;
 import onskeskyen.service.SkyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +40,7 @@ public class SkyController {
         }
         UserDTO userWish = new UserDTO();
         model.addAttribute("addedUserWish", userWish);
-        model.addAttribute("allTags");
+        model.addAttribute("allTags", skyservice.allTags());
         return "addForm";
     }
 
@@ -54,11 +55,12 @@ public class SkyController {
 
         skyservice.addWish(userDTO, session);
 
-        return "redirect:/";
+        return "redirect:/allWishes";
     }
 
     @GetMapping("/{wishID}/edit")
     public String editWish(Model model, @PathVariable int wishID, HttpSession session) {
+
         Integer userID = (Integer) session.getAttribute("user_id");
 
         if(userID == null) {
@@ -71,10 +73,10 @@ public class SkyController {
         return "updateWish";
     }
 
-    @PostMapping("/ypdate")
+    @PostMapping("/update")
     public String updateWish(@ModelAttribute Wish wish, HttpSession session) {
         skyservice.editWish(wish, session);
-        return "redirect:/Homepage";
+        return "redirect:/allWishes";
     }
 
     @GetMapping("/allWishes")
@@ -100,6 +102,14 @@ public class SkyController {
         return "redirect:/quickwish";
     }
 
+    @PostMapping("/{wishID}/deleteWish")
+    public String deleteWish(Model model, @PathVariable int wishID, HttpSession session) {
+
+        model.addAttribute("deltedWish", skyservice.deleteWish(wishID, session));
+        return "redirect:/allWishes";
+    }
+
+    //TODO getMapping for /login og /register
 
     @PostMapping("/login")
     public String login(@RequestParam(required = false) String username, @RequestParam(required = false) String password,@RequestParam(required = false) String email, HttpSession session, ModelMap model){
