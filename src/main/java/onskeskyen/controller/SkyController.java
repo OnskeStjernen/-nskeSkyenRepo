@@ -71,9 +71,9 @@ public class SkyController {
             return "redirect:/login";
         }
 
-        skyservice.quickShareService(name,price,tags,email);
+        if(!skyservice.quickShareService(name,price,email)) System.out.println("something went wrong");
 
-
+        return "redirect:/quickwish";
     }
 
 
@@ -98,7 +98,8 @@ public class SkyController {
         }else{
             System.out.println("error");
             model.addAttribute("error", "Username already taken");
-            return "redirect:/homepage";
+            // TODO: Redirect to "/" since "/homepage" is not mapped
+            return "redirect:/";
         }
     }
 

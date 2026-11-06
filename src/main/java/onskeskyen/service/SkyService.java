@@ -74,9 +74,9 @@ public class SkyService {
             session.removeAttribute("quickWishes");
         }
     }
-    public boolean quickShareService(String name, int price,List<String> tags,String email){
+    public boolean quickShareService(String name, int price,String email){
         if(!skyRepository.checkEmail(email)) return false;
-        return skyRepository.ShareWish(name,price,tags,email);
+        return skyRepository.ShareWish(name,price,email);
 
     }
 }

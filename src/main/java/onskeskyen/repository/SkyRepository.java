@@ -75,11 +75,14 @@ public class SkyRepository {
                VALUES (?,?)              
                """;
 
-        for(String tag : userDTO.getTags()) {
-
-            Integer tagID = db.queryForObject(sqlTag, Integer.class, tag);
-
-            db.update(sqlTagsWish, tagID, wishID.intValue());
+        // TODO: Guard against null tags list and missing tag rows in database
+        if (userDTO.getTags() != null) {
+            for (String tag : userDTO.getTags()) {
+                List<Integer> tagIDs = db.queryForList(sqlTag, Integer.class, tag);
+                if (!tagIDs.isEmpty()) {
+                    db.update(sqlTagsWish, tagIDs.get(0), wishID.intValue());
+                }
+            }
         }
 
         return 1;
@@ -155,8 +158,9 @@ public class SkyRepository {
         String insertLinkSql = "INSERT INTO userWishes (user_id, wish_id) VALUES (?, ?)";
 
         db.update(insertLinkSql, userId, exactWishId);
-        String updatecount = "UPDATE wishcounter SET wish_count = wish_count + 1 WHERE wish_id = ?";
-        db.update(updatecount,exactWishId);
+        // TODO: Insert initial row in wishCounter (matching table case in schema.sql)
+        String insertCount = "INSERT INTO wishCounter (wish_id, wish_count) VALUES (?, 1)";
+        db.update(insertCount, exactWishId);
         return new Wish(exactWishId, name, price, tags);
     }
 
@@ -184,24 +188,42 @@ public class SkyRepository {
 
     }
     @Transactional
-    public boolean ShareWish(String name,int price,List<String> tags,String email){
-        String insertWishSql = "INSERT INTO wish (name, price) VALUES (?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+    public boolean ShareWish(String name, int price, String email) {
+        // TODO: Reuse existing wish_id if wish name already exists, otherwise insert new wish and counter
+        List<Integer> existingWishes = db.queryForList("SELECT wish_id FROM wish WHERE name = ?", Integer.class, name);
+        int exactWishId;
 
-        db.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertWishSql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, name);
-            ps.setInt(2, price);
-            return ps;
-        }, keyHolder);
+        if (!existingWishes.isEmpty()) {
+            exactWishId = existingWishes.get(0);
+            db.update("UPDATE wishCounter SET wish_count = wish_count + 1 WHERE wish_id = ?", exactWishId);
+        } else {
+            String insertWishSql = "INSERT INTO wish (name, price) VALUES (?, ?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        int exactWishId = keyHolder.getKey().intValue();
+            db.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(insertWishSql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, name);
+                ps.setInt(2, price);
+                return ps;
+            }, keyHolder);
 
-        String insertLinkSql = "INSERT INTO userWishes (user_id, wish_id) VALUES (?, ?)";
+            exactWishId = keyHolder.getKey().intValue();
+            db.update("INSERT INTO wishCounter (wish_id, wish_count) VALUES (?, 1)", exactWishId);
+        }
 
-        db.update(insertLinkSql, userId, exactWishId);
-        String updatecount = "UPDATE wishcounter SET wish_count = wish_count + 1 WHERE wish_id = ?";
-        db.update(updatecount,exactWishId);
-        return new Wish(exactWishId, name, price, tags);
+        String selectUser = "SELECT user_id FROM users WHERE email = ?";
+        List<Map<String, Object>> list = db.queryForList(selectUser, email);
+        int userId = ((Number) list.get(0).get("user_id")).intValue();
+
+        // TODO: Avoid duplicate link if receiver already has this wish
+        List<Integer> existingLink = db.queryForList(
+                "SELECT userWish_id FROM userWishes WHERE user_id = ? AND wish_id = ?",
+                Integer.class, userId, exactWishId
+        );
+        if (existingLink.isEmpty()) {
+            String insertLinkSql = "INSERT INTO userWishes (user_id, wish_id) VALUES (?, ?)";
+            db.update(insertLinkSql, userId, exactWishId);
+        }
+        return true;
     }
 }

@@ -65,7 +65,8 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="Email" class="form-label">Email of reciver</label>
-                                    <input id="Email" name="email" type="Email" class="form-control" placeholder="F.eks. xxxx@gmail.com">
+                                    <!-- TODO: Added required and lowercase type="email" so empty email cannot be submitted -->
+                                    <input id="Email" name="email" type="email" class="form-control" placeholder="F.eks. xxxx@gmail.com" required>
                                 </div>
                                 <button id="quickShareSubmitBtn" type="submit" class="btn btn-primary w-100">Share ønske</button>
                             </fieldset>
