@@ -16,7 +16,7 @@ Alle arbejder i det samme repository, men laver deres ændringer i hver deres fe
 
 ## Branching Strategi
 
-Feature -> Developer -> Main -> Prod
+feature -> developer -> main -> prod
 
 - **feature:** Bruges til at lave nye funktioner eller ændringer. 
 - **developer:** Her samles de nye funktioner fra feature branches.
