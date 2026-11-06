@@ -8,7 +8,9 @@ xmlns:th="https://www.thymeleaf.org"
 </head>
 <body>
 
-<tabel>
+<h1> Alle Ønsker</h1>
+
+<table>
     <thead>
     <tr>
         <th>Name</th>
@@ -22,12 +24,22 @@ xmlns:th="https://www.thymeleaf.org"
         <td th:text="${wish.name}"></td>
         <td th:text="${wish.price}"></td>
         <td th:text="${wish.tags}"></td>
+        <td>
+            <a th:href="@{/{wishID}/edit(wishID=${wish.wishID})}">Opdater</a>
+        </td>
+        <td>
+            <form th:action="@{/{wishID}/deleteWish (wishID=${wish.wishID})}" method="POST" onsubmit="return confirm('Er du sikker på du vil slette dit ønske?')">
+                <button type="submit"> Slet</button>
+            </form>
+        </td>
 
     </tr>
     </tbody>
 
-</tabel>
+</table>
+<br>
 
+<a th:href="@{/addWish}"> Tilføj ønske</a>
 
 </body>
 </html>

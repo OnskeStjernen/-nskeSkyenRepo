@@ -51,6 +51,9 @@ public class SkyService {
         return skyRepository.allTags();
     }
 
+    public int deleteWish(int wishID, HttpSession session) {
+        return skyRepository.deleteWish(wishID, session);
+    }
 
     public int registerLogin(String username, String password, String email) {
         System.out.println("service called");

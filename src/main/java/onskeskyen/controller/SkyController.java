@@ -35,7 +35,7 @@ public class SkyController {
     public String addWish(Model model) {
         UserDTO userWish = new UserDTO();
         model.addAttribute("addedUserWish", userWish);
-        model.addAttribute("allTags");
+        model.addAttribute("allTags", skyservice.allTags());
         return "addForm";
     }
 
@@ -50,7 +50,7 @@ public class SkyController {
 
         skyservice.addWish(userDTO, session);
 
-        return "redirect:/homepage";
+        return "redirect:/allWishes";
     }
 
     @GetMapping("/{wishID}/edit")
@@ -68,17 +68,23 @@ public class SkyController {
         return "updateWish";
     }
 
-    @PostMapping("/ypdate")
+    @PostMapping("/update")
     public String updateWish(@ModelAttribute Wish wish, HttpSession session) {
         skyservice.editWish(wish, session);
-        return "redirect:/Homepage";
+        return "redirect:/allWishes";
     }
 
     @GetMapping("/allWishes")
     public String allWishes(Model model, HttpSession session) {
         model.addAttribute("allWishes", skyservice.allWishesByUserID(session));
-
         return "allWishesByUserID";
+    }
+
+    @PostMapping("/{wishID}/deleteWish")
+    public String deleteWish(Model model, @PathVariable int wishID, HttpSession session) {
+
+        model.addAttribute("deltedWish", skyservice.deleteWish(wishID, session));
+        return "redirect:/allWishes";
     }
 
     //TODO getMapping for /login og /register

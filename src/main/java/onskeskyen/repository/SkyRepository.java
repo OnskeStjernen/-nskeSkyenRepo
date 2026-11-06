@@ -171,7 +171,7 @@ public class SkyRepository {
         }
 
         String sql = """
-                SELECT wish_id, name, price 
+                SELECT w.wish_id, w.name, w.price 
                 FROM wish w
                 JOIN userWishes uw ON w.wish_id = uw.wish_id
                 WHERE uw.user_id = ?
@@ -194,10 +194,10 @@ public class SkyRepository {
         }
 
         String sql = """
-                SELECT wish_id, name, price
+                SELECT w.wish_id, w.name, w.price
                 FROM wish w
                 JOIN userWishes uw ON uw.wish_id = w.wish_id 
-                JOIN user u ON u.user_id = uw.user_id
+                JOIN users u ON u.user_id = uw.user_id
                 WHERE w.wish_id = ? AND uw.user_id = ?
                 """;
 
@@ -232,6 +232,24 @@ public class SkyRepository {
                 rs.getString("tag_name"));
 
         return tags;
+    }
+
+    @Transactional
+    public int deleteWish(int wishID, HttpSession session) {
+
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            throw new IllegalArgumentException("Could not retrieve user information");
+        }
+
+        String sql = """
+                DELETE w FROM wish w
+                JOIN userWishes uw ON uw.wish_id = w.wish_id
+                WHERE w.wish_id = ? AND uw.user_id = ?
+                """;
+
+        return db.update(sql, wishID, userID);
     }
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
