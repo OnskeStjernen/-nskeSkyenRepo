@@ -2,10 +2,6 @@ package onskeskyen.controller;
 
 
 import jakarta.servlet.http.HttpSession;
-import onskeskyen.model.UserDTO;
-
-import onskeskyen.model.Wish;
-import onskeskyen.model.WishList;
 import onskeskyen.model.Wish;
 import onskeskyen.service.SkyService;
 import org.springframework.stereotype.Controller;
@@ -21,7 +17,6 @@ import java.util.List;
 public class SkyController {
     private final SkyService skyservice;
 
-//
     @GetMapping("/")
     public String home() {
         return "Homepage";
@@ -29,33 +24,6 @@ public class SkyController {
 
     public SkyController(SkyService skyservice) {
         this.skyservice = skyservice;
-    }
-
-    @GetMapping("/addWish")
-    public String addWish(Model model, HttpSession session) {
-        Integer userID = (Integer) session.getAttribute("user_id");
-
-        if(userID == null) {
-            return "redirect:/login";
-        }
-        UserDTO userWish = new UserDTO();
-        model.addAttribute("addedUserWish", userWish);
-        model.addAttribute("allTags", skyservice.allTags());
-        return "addForm";
-    }
-
-    @PostMapping("/saveWish")
-    public String saveWish(@ModelAttribute UserDTO userDTO, HttpSession session) {
-
-        Integer userID = (Integer) session.getAttribute("user_id");
-
-        if(userID == null) {
-            return "redirect:/login";
-        }
-
-        skyservice.addWish(userDTO, session);
-
-        return "redirect:/allWishes";
     }
 
     @GetMapping("/{wishID}/edit")
@@ -76,14 +44,7 @@ public class SkyController {
     @PostMapping("/update")
     public String updateWish(@ModelAttribute Wish wish, HttpSession session) {
         skyservice.editWish(wish, session);
-        return "redirect:/allWishes";
-    }
-
-    @GetMapping("/allWishes")
-    public String allWishes(Model model, HttpSession session) {
-        model.addAttribute("allWishes", skyservice.allWishesByUserID(session));
-
-        return "allWishesByUserID";
+        return "redirect:/quickwish";
     }
 
     @PostMapping("/quickShareWish")
@@ -97,7 +58,7 @@ public class SkyController {
             return "redirect:/login";
         }
 
-        if(!skyservice.quickShareService(name,price,email)) System.out.println("something went wrong");
+        if(!skyservice.quickShareService(name,price,tags,email)) System.out.println("something went wrong");
 
         return "redirect:/quickwish";
     }
@@ -106,10 +67,10 @@ public class SkyController {
     public String deleteWish(Model model, @PathVariable int wishID, HttpSession session) {
 
         model.addAttribute("deltedWish", skyservice.deleteWish(wishID, session));
-        return "redirect:/allWishes";
+        return "redirect:/quickwish";
     }
 
-    //TODO getMapping for /login og /register
+
 
     @PostMapping("/login")
     public String login(@RequestParam(required = false) String username, @RequestParam(required = false) String password,@RequestParam(required = false) String email, HttpSession session, ModelMap model){
@@ -132,7 +93,7 @@ public class SkyController {
         }else{
             System.out.println("error");
             model.addAttribute("error", "Username already taken");
-            // TODO: Redirect to "/" since "/homepage" is not mapped
+            
             return "redirect:/";
         }
     }
@@ -152,6 +113,8 @@ public class SkyController {
     public String quickAdd(ModelMap model, HttpSession session) {
         ArrayList<Wish> wishItems = skyservice.getQuickWishes(session);
         model.addAttribute("wishes", wishItems);
+        model.addAttribute("allTags", skyservice.allTags());
+        model.addAttribute("isLoggedIn", session.getAttribute("user_id") != null);
         return "QuickWish";
     }
 

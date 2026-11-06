@@ -8,6 +8,9 @@ public class Wish {
     private float price;
     private List<String> tags;
 
+    public Wish() {
+    }
+
     public Wish(int wishID, String name, float price, List<String> tags) {
         this.wishID = wishID;
         this.name = name;
@@ -32,6 +35,10 @@ public class Wish {
     }
 
     public void setID(int wishID) {
+        this.wishID = wishID;
+    }
+
+    public void setWishID(int wishID) {
         this.wishID = wishID;
     }
 

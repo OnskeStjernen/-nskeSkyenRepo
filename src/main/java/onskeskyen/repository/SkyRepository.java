@@ -1,7 +1,6 @@
 package onskeskyen.repository;
 
 import jakarta.servlet.http.HttpSession;
-import onskeskyen.model.UserDTO;
 import onskeskyen.model.Wish;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -23,95 +22,6 @@ public class SkyRepository {
 
     public SkyRepository(JdbcTemplate db) {
         this.db = db;
-    }
-
-    public List<Wish> getAllWishes(HttpSession session) {
-
-        Integer userID = (Integer) session.getAttribute("user_id");
-
-        if(userID == null) {
-            throw new IllegalArgumentException("could not find user information");
-        }
-
-        String sql = """
-               SELECT w.wish_id, w.name, w.price
-               FROM wish w
-               JOIN userWishes uw ON uw.wish_id = w.wish_id
-               WHERE uw.user_id = ?
-                """;
-
-        List<Wish> wishes = db.query(sql, (rs, rowNum) -> new Wish(
-                rs.getInt("wish_id"),
-                rs.getString("name"),
-                rs.getFloat("price"),
-                getTagsByWishID(rs.getInt("wish_id"), session)
-
-        ), userID);
-
-       return wishes;
-    }
-
-    @Transactional
-    public int addWish(UserDTO userDTO, HttpSession session) {
-
-        Integer userID = (Integer) session.getAttribute("user_id");
-
-        if(userID == null) {
-            return -1;
-        }
-
-        String sqlWish = """
-                INSERT INTO wish (name, price)
-                VALUES(?, ?)
-                """;
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        db.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlWish, Statement.RETURN_GENERATED_KEYS);
-
-            ps.setString(1, userDTO.getName());
-            ps.setDouble(2, userDTO.getPrice());
-
-            return ps;
-        }, keyHolder);
-
-        Number wishID = keyHolder.getKey();
-
-        if(wishID == null) {
-            throw new IllegalStateException("Could not retrieve the wish id");
-        }
-
-        String sqlUserWishes = """
-                INSERT INTO userWishes (user_id, wish_id) 
-                VALUES (?, ?)
-                """;
-
-        db.update(sqlUserWishes, userID, wishID.intValue());
-
-
-        String sqlTag = """
-                SELECT tag_id
-                FROM tags
-                WHERE tag_name = ?
-                """;
-
-        String sqlTagsWish = """
-               INSERT INTO tagsWish (tag_id, wish_id)
-               VALUES (?,?)              
-               """;
-
-        // TODO: Guard against null tags list and missing tag rows in database
-        if (userDTO.getTags() != null) {
-            for (String tag : userDTO.getTags()) {
-                List<Integer> tagIDs = db.queryForList(sqlTag, Integer.class, tag);
-                if (!tagIDs.isEmpty()) {
-                    db.update(sqlTagsWish, tagIDs.get(0), wishID.intValue());
-                }
-            }
-        }
-
-        return 1;
     }
 
     @Transactional
@@ -156,36 +66,15 @@ public class SkyRepository {
                 WHERE tag_name = ?
                 """;
 
-        for(String tag_name : w.getTags()) {
-            int rows = db.update(insertTags, wishID, tag_name);
+        if (w.getTags() != null) {
+            for(String tag_name : w.getTags()) {
+                int rows = db.update(insertTags, wishID, tag_name);
 
-            if(rows != 1) {
-                throw new IllegalArgumentException("Tag not found " + tag_name);
+                if(rows != 1) {
+                    throw new IllegalArgumentException("Tag not found " + tag_name);
+                }
             }
         }
-    }
-
-    public List<Wish> allWishesByUserID(HttpSession session) {
-
-        Integer userID = (Integer) session.getAttribute("user_id");
-
-        if(userID == null) {
-            throw new IllegalArgumentException("can not retrieve user information");
-        }
-
-        String sql = """
-                SELECT w.wish_id, w.name, w.price 
-                FROM wish w
-                JOIN userWishes uw ON w.wish_id = uw.wish_id
-                WHERE uw.user_id = ?
-                """;
-
-        return db.query(sql, (rs, rowNum) -> new Wish(
-                rs.getInt("wish_id"),
-                rs.getString("name"),
-                rs.getFloat("price"),
-                getTagsByWishID(rs.getInt("wish_id"), session)
-        ), userID);
     }
 
     public Wish getWishByID(int wishID, HttpSession session) {
@@ -234,6 +123,15 @@ public class SkyRepository {
         List<String> tags = db.query(sql, (rs, rowNum) ->
                 rs.getString("tag_name"));
 
+
+        if (tags.isEmpty()) {
+            List<String> defaultTags = List.of("Bolig", "Elektronik", "Bøger", "Tøj & Sko", "Oplevelser", "Sport", "Køkken");
+            for (String tag : defaultTags) {
+                db.update("INSERT INTO tags (tag_name) VALUES (?)", tag);
+            }
+            return defaultTags;
+        }
+
         return tags;
     }
 
@@ -246,13 +144,16 @@ public class SkyRepository {
             throw new IllegalArgumentException("Could not retrieve user information");
         }
 
-        String sql = """
-                DELETE w FROM wish w
-                JOIN userWishes uw ON uw.wish_id = w.wish_id
-                WHERE w.wish_id = ? AND uw.user_id = ?
-                """;
 
-        return db.update(sql, wishID, userID);
+        int removedLink = db.update("DELETE FROM userWishes WHERE wish_id = ? AND user_id = ?", wishID, userID);
+        if (removedLink > 0) {
+            db.update("DELETE FROM tagsWish WHERE wish_id = ?", wishID);
+            db.update("DELETE FROM wishCounter WHERE wish_id = ?", wishID);
+            db.update("DELETE FROM reserve WHERE wish_id = ?", wishID);
+            return db.update("DELETE FROM wish WHERE wish_id = ?", wishID);
+        }
+
+        return 0;
     }
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -329,9 +230,21 @@ public class SkyRepository {
         String insertLinkSql = "INSERT INTO userWishes (user_id, wish_id) VALUES (?, ?)";
 
         db.update(insertLinkSql, userId, exactWishId);
-        // TODO: Insert initial row in wishCounter (matching table case in schema.sql)
+
         String insertCount = "INSERT INTO wishCounter (wish_id, wish_count) VALUES (?, 1)";
         db.update(insertCount, exactWishId);
+
+        String sqlTag = "SELECT tag_id FROM tags WHERE tag_name = ?";
+        String sqlTagsWish = "INSERT INTO tagsWish (tag_id, wish_id) VALUES (?,?)";
+        if (tags != null) {
+            for (String tag : tags) {
+                List<Integer> tagIDs = db.queryForList(sqlTag, Integer.class, tag);
+                if (!tagIDs.isEmpty()) {
+                    db.update(sqlTagsWish, tagIDs.get(0), exactWishId);
+                }
+            }
+        }
+
         return new Wish(exactWishId, name, price, tags);
     }
 
@@ -347,7 +260,7 @@ public class SkyRepository {
                 rs.getInt("wish_id"),
                 rs.getString("name"),
                 rs.getInt("price"),
-                new ArrayList<>()
+                getTagsByWishID(rs.getInt("wish_id"), null)
         ), userId);
 
         return new ArrayList<>(wishes);
@@ -359,8 +272,8 @@ public class SkyRepository {
 
     }
     @Transactional
-    public boolean ShareWish(String name, int price, String email) {
-        // TODO: Reuse existing wish_id if wish name already exists, otherwise insert new wish and counter
+    public boolean ShareWish(String name, int price, List<String> tags, String email) {
+
         List<Integer> existingWishes = db.queryForList("SELECT wish_id FROM wish WHERE name = ?", Integer.class, name);
         int exactWishId;
 
@@ -380,13 +293,24 @@ public class SkyRepository {
 
             exactWishId = keyHolder.getKey().intValue();
             db.update("INSERT INTO wishCounter (wish_id, wish_count) VALUES (?, 1)", exactWishId);
+
+            String sqlTag = "SELECT tag_id FROM tags WHERE tag_name = ?";
+            String sqlTagsWish = "INSERT INTO tagsWish (tag_id, wish_id) VALUES (?,?)";
+            if (tags != null) {
+                for (String tag : tags) {
+                    List<Integer> tagIDs = db.queryForList(sqlTag, Integer.class, tag);
+                    if (!tagIDs.isEmpty()) {
+                        db.update(sqlTagsWish, tagIDs.get(0), exactWishId);
+                    }
+                }
+            }
         }
 
         String selectUser = "SELECT user_id FROM users WHERE email = ?";
         List<Map<String, Object>> list = db.queryForList(selectUser, email);
         int userId = ((Number) list.get(0).get("user_id")).intValue();
 
-        // TODO: Avoid duplicate link if receiver already has this wish
+
         List<Integer> existingLink = db.queryForList(
                 "SELECT userWish_id FROM userWishes WHERE user_id = ? AND wish_id = ?",
                 Integer.class, userId, exactWishId

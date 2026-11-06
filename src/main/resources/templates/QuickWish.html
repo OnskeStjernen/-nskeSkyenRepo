@@ -34,8 +34,13 @@
                                     <input id="wishPrice" name="price" type="number" min="0" inputmode="numeric" class="form-control" placeholder="F.eks. 1899" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="wishTags" class="form-label">Tags / Link (valgfri)</label>
-                                    <input id="wishTags" name="tags" type="text" class="form-control" placeholder="F.eks. Elektronik">
+                                    <label class="form-label">Tags:</label>
+                                    <div th:each="t : ${allTags}">
+                                        <label>
+                                            <input type="checkbox" name="tags" th:value="${t}">
+                                            <span th:text="${t}"></span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <button id="quickWishSubmitBtn" type="submit" class="btn btn-primary w-100">Tilføj ønske</button>
                             </fieldset>
@@ -44,8 +49,8 @@
                 </div>
             </div>
 
-            <!-- Quick Add Form -->
-            <div class="col-12 col-lg-5">
+            <!-- Share Form (Hidden unless logged in) -->
+            <div class="col-12 col-lg-5" th:if="${isLoggedIn}">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <form id="quickShareForm" th:action="@{/quickShareWish}" method="post">
@@ -60,12 +65,16 @@
                                     <input id="SharePrice" name="price" type="number" min="0" inputmode="numeric" class="form-control" placeholder="F.eks. 1899" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="ShareTags" class="form-label">Tags / Link (valgfri)</label>
-                                    <input id="ShareTags" name="tags" type="text" class="form-control" placeholder="F.eks. Elektronik">
+                                    <label class="form-label">Tags:</label>
+                                    <div th:each="t : ${allTags}">
+                                        <label>
+                                            <input type="checkbox" name="tags" th:value="${t}">
+                                            <span th:text="${t}"></span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="Email" class="form-label">Email of reciver</label>
-                                    <!-- TODO: Added required and lowercase type="email" so empty email cannot be submitted -->
                                     <input id="Email" name="email" type="email" class="form-control" placeholder="F.eks. xxxx@gmail.com" required>
                                 </div>
                                 <button id="quickShareSubmitBtn" type="submit" class="btn btn-primary w-100">Share ønske</button>
@@ -80,9 +89,10 @@
                 <table class="table table-striped table-hover align-middle">
                     <thead>
                     <tr>
-                        <th scope="col" class="w-50">Wish</th>
-                        <th scope="col" class="w-25">Price</th>
-                        <th scope="col" class="w-25">Link</th>
+                        <th scope="col">Wish</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Tags</th>
+                        <th scope="col" th:if="${isLoggedIn}" colspan="2">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -93,6 +103,14 @@
                         <td th:text="${item.price + ' kr.'}">0 kr.</td>
                         <td class="text-muted">
                             <a class="linking" th:text="${item.tags}">Forlystelsespark i København</a>
+                        </td>
+                        <td th:if="${isLoggedIn}">
+                            <a th:href="@{/{wishID}/edit(wishID=${item.wishID})}" class="btn btn-sm btn-outline-primary">Opdater</a>
+                        </td>
+                        <td th:if="${isLoggedIn}">
+                            <form th:action="@{/{wishID}/deleteWish(wishID=${item.wishID})}" method="POST" onsubmit="return confirm('Er du sikker på du vil slette dit ønske?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Slet</button>
+                            </form>
                         </td>
                     </tr>
                     </tbody>

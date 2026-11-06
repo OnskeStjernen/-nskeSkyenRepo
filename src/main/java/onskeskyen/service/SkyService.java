@@ -1,14 +1,11 @@
 package onskeskyen.service;
 
 import jakarta.servlet.http.HttpSession;
-import onskeskyen.model.UserDTO;
 import onskeskyen.model.Wish;
 import onskeskyen.repository.SkyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import java.util.List;
 
 @Service
@@ -17,10 +14,6 @@ public class SkyService {
 
     public SkyService(SkyRepository skyRepository) {
         this.skyRepository = skyRepository;
-    }
-
-    public void addWish(UserDTO userDTO, HttpSession sessions) {
-        this.skyRepository.addWish(userDTO, sessions);
     }
 
     public int checkLogin(String username, String password, HttpSession session, String email) {
@@ -41,10 +34,6 @@ public class SkyService {
 
     public Wish getWishByID(int wishID, HttpSession session) {
         return skyRepository.getWishByID(wishID, session);
-    }
-
-    public List<Wish> allWishesByUserID(HttpSession session) {
-        return skyRepository.allWishesByUserID(session);
     }
 
     public List<String> allTags() {
@@ -97,9 +86,9 @@ public class SkyService {
             session.removeAttribute("quickWishes");
         }
     }
-    public boolean quickShareService(String name, int price,String email){
+    public boolean quickShareService(String name, int price, List<String> tags, String email){
         if(!skyRepository.checkEmail(email)) return false;
-        return skyRepository.ShareWish(name,price,email);
+        return skyRepository.ShareWish(name,price,tags,email);
 
     }
 }

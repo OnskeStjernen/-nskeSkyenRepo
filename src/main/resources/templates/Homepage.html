@@ -22,7 +22,7 @@
         <div class="bento-nav-links">
             <a th:href="@{/}" class="bento-nav-item active">Forside</a>
             <a href="#mine-onsker" class="bento-nav-item">Mine ønsker</a>
-            <a th:href="@{/addWish}" class="bento-nav-item">Tilføj ønske</a>
+            <a th:href="@{/quickwish}" class="bento-nav-item">Tilføj ønske</a>
             <a href="#bento-tags" class="bento-nav-item">Tags</a>
         </div>
 
@@ -48,7 +48,7 @@
                     <span class="bento-label">Overblik</span>
                     <h2>Seneste ønsker</h2>
                 </div>
-                <a th:href="@{/addWish}" class="bento-header-link">+ Nyt ønske</a>
+                <a th:href="@{/quickwish}" class="bento-header-link">+ Nyt ønske</a>
             </div>
 
             <div class="bento-wish-list">
@@ -101,7 +101,6 @@
             </p>
             <div class="bento-card-footer">
                 <a th:href="@{/quickwish}" class="btn-bento-primary">Åbn QuickWish</a>
-                <a th:href="@{/addWish}" class="btn-bento-outline">Standard formular</a>
             </div>
         </div>
 
