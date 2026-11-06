@@ -6,7 +6,6 @@ import onskeskyen.model.UserDTO;
 
 import onskeskyen.model.Wish;
 import onskeskyen.model.WishList;
-import onskeskyen.model.Wish;
 import onskeskyen.service.SkyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +31,12 @@ public class SkyController {
     }
 
     @GetMapping("/addWish")
-    public String addWish(Model model) {
+    public String addWish(Model model, HttpSession session) {
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return "redirect:/login";
+        }
         UserDTO userWish = new UserDTO();
         model.addAttribute("addedUserWish", userWish);
         model.addAttribute("allTags");
@@ -50,12 +54,11 @@ public class SkyController {
 
         skyservice.addWish(userDTO, session);
 
-        return "redirect:/homepage";
+        return "redirect:/";
     }
 
     @GetMapping("/{wishID}/edit")
     public String editWish(Model model, @PathVariable int wishID, HttpSession session) {
-
         Integer userID = (Integer) session.getAttribute("user_id");
 
         if(userID == null) {
@@ -81,6 +84,21 @@ public class SkyController {
         return "allWishesByUserID";
     }
 
+    @PostMapping("/quickShareWish")
+    public String quickShareWish(@RequestParam String name,
+                                 @RequestParam int price,
+                                 @RequestParam(required = false) List<String> tags,
+                                 @RequestParam String email,HttpSession session){
+        Integer userID = (Integer) session.getAttribute("user_id");
+
+        if(userID == null) {
+            return "redirect:/login";
+        }
+
+        if(!skyservice.quickShareService(name,price,email)) System.out.println("something went wrong");
+
+        return "redirect:/quickwish";
+    }
 
 
     @PostMapping("/login")
@@ -88,10 +106,10 @@ public class SkyController {
         if(skyservice.checkLogin(username,password,session,email) == 1) {
             model.addAttribute("username", username);
             System.out.println("login succsess");
-            return "redirect:/homepage";
+            return "redirect:/";
         }else {
             System.out.println("login failed");
-            return "redirect:/homepage";
+            return "redirect:/";
         }
     }
 
@@ -104,7 +122,8 @@ public class SkyController {
         }else{
             System.out.println("error");
             model.addAttribute("error", "Username already taken");
-            return "redirect:/homepage";
+            // TODO: Redirect to "/" since "/homepage" is not mapped
+            return "redirect:/";
         }
     }
 
