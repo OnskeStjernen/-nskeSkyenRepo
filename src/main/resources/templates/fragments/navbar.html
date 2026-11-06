@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Navbar</title>
+</head>
+<body>
+
+<!-- Grounded, clean top navigation bar -->
+<header class="bento-header-wrapper" th:fragment="Navbar">
+    <nav class="bento-nav" aria-label="Hovednavigation">
+        <a th:href="@{/}" class="bento-brand">
+            <span class="bento-brand-mark"><i class="bi bi-stars"></i></span>
+            <span>ØnskeSkyen</span>
+        </a>
+
+        <div class="bento-nav-links">
+            <a th:href="@{/}" class="bento-nav-item active">Forside</a>
+            <a th:href="@{/#mine-onsker}" class="bento-nav-item">Mine ønsker</a>
+            <a th:href="@{/#bento-tags}" class="bento-nav-item">Tags</a>
+        </div>
+
+        <div class="bento-nav-actions">
+            <a th:href="@{/login}" class="bento-login-link">Log ind</a>
+            <a th:href="@{/quickwish}" class="bento-quickwish-btn">QuickWish</a>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

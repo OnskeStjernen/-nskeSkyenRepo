@@ -1,6 +1,7 @@
 package onskeskyen.controller;
 
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import onskeskyen.model.Wish;
 import onskeskyen.service.SkyService;
@@ -18,7 +19,10 @@ public class SkyController {
     private final SkyService skyservice;
 
     @GetMapping("/")
-    public String home() {
+    public String home(ModelMap model, HttpSession session) {
+        model.addAttribute("wishes", skyservice.getQuickWishes(session));
+        model.addAttribute("allTags", skyservice.allTags());
+        model.addAttribute("isLoggedIn", session.getAttribute("user_id") != null);
         return "Homepage";
     }
 
@@ -99,13 +103,14 @@ public class SkyController {
     }
 
     @GetMapping("/login")
-    public String getLogin(ModelMap modelMap){
+    public String getLogin(HttpServletResponse response){
+        response.setHeader("Cache-Control", "public, max-age=300");
         return "login";
     }
 
     @GetMapping("/register")
-    public String getRegister(ModelMap modelMap){
-
+    public String getRegister(HttpServletResponse response){
+        response.setHeader("Cache-Control", "public, max-age=300");
         return "register";
     }
 
