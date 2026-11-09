@@ -23,6 +23,12 @@
             <a th:href="@{/register}" class="bento-header-link">Opret bruger</a>
         </div>
 
+        <!-- Error message for profileNotFoundExceptiom -->
+
+        <div th:if="${errorMessage}">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
         <form action="/login" method="post" class="login-form">
             <div class="mb-3">
                 <label for="loginUsername" class="bento-text mb-1">Brugernavn</label>

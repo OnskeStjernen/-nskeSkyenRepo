@@ -38,3 +38,12 @@ Når applikationen er startet, kan den åbnes i browseren på: http://localhost:
 ## Bidrag
 
 Se CONTRIBUTING.md
+
+## Prototype
+![Prototype](OnskestjernePrototype.png)
+
+## ER-model
+![ER-model](ERmodel.png)
+
+## Klasse Diagram
+![Klasse Diagram](classDiagram.png)
