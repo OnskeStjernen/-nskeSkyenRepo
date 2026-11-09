@@ -40,6 +40,6 @@ Når applikationen er startet, kan den åbnes i browseren på: http://localhost:
 Se CONTRIBUTING.md
 
 ## Prototype
-![Prototype](Ønskestjerne prototype.png)
+![Prototype](OnskestjernePrototype.png)
 
 
