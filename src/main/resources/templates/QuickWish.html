@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ØnskeSkyen · QuickWish</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body class="bento-page-body">
+
+<div th:replace="~{fragments/navbar :: Navbar}"></div>
+
+<main class="bento-main-container">
+    <section class="bento-grid">
+
+
+        <div class="bento-card">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Hurtig oprettelse</span>
+                    <h2>Tilføj hurtigt ønske</h2>
+                </div>
+            </div>
+
+            <form id="quickWishForm" th:action="@{/quickAddWish}" method="post">
+                <fieldset>
+                    <div class="mb-3">
+                        <label for="wishName" class="bento-text mb-1">Ønske (påkrævet)</label>
+                        <input id="wishName" name="name" type="text" class="form-control" placeholder="F.eks. Støjreducerende høretelefoner" maxlength="100" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="wishPrice" class="bento-text mb-1">Pris i kr. (påkrævet)</label>
+                        <input id="wishPrice" name="price" type="number" min="0" inputmode="numeric" class="form-control" placeholder="F.eks. 1899" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="bento-text mb-1 d-block">Tags:</label>
+                        <div class="tag-cloud">
+                            <label class="sky-tag" th:each="t : ${allTags}">
+                                <input type="checkbox" name="tags" th:value="${t}" class="me-1">
+                                <span th:text="${t}"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bento-card-footer">
+                        <button id="quickWishSubmitBtn" type="submit" class="btn-bento-primary border-0 w-100">Tilføj ønske</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+
+        <div class="bento-card" th:if="${isLoggedIn}">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Deling</span>
+                    <h2>Share et eller flere ønsker</h2>
+                </div>
+            </div>
+
+            <form id="quickShareForm" th:action="@{/quickShareWish}" method="post">
+                <fieldset>
+                    <div class="mb-3">
+                        <label for="ShareName" class="bento-text mb-1">Ønske (påkrævet)</label>
+                        <input id="ShareName" name="name" type="text" class="form-control" placeholder="F.eks. Støjreducerende høretelefoner" maxlength="100" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="SharePrice" class="bento-text mb-1">Pris i kr. (påkrævet)</label>
+                        <input id="SharePrice" name="price" type="number" min="0" inputmode="numeric" class="form-control" placeholder="F.eks. 1899" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="bento-text mb-1 d-block">Tags:</label>
+                        <div class="tag-cloud">
+                            <label class="sky-tag" th:each="t : ${allTags}">
+                                <input type="checkbox" name="tags" th:value="${t}" class="me-1">
+                                <span th:text="${t}"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Email" class="bento-text mb-1">Email of reciver</label>
+                        <input id="Email" name="email" type="email" class="form-control" placeholder="F.eks. xxxx@gmail.com" required>
+                    </div>
+                    <div class="bento-card-footer">
+                        <button id="quickShareSubmitBtn" type="submit" class="btn-bento-primary border-0 w-100">Share ønske</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+        <!-- Bento Card 3 (Wide): Wishes List -->
+        <div class="bento-card bento-span-2">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Overblik</span>
+                    <h2>Dine ønsker</h2>
+                </div>
+                <a th:href="@{/}" class="bento-header-link">Tilbage til forsiden</a>
+            </div>
+
+            <div class="bento-wish-list">
+                <div class="bento-wish-row" th:each="item : ${wishes}">
+                    <div class="bento-wish-info">
+                        <span class="bento-wish-name" th:text="${item.name}">Tivoli</span>
+                        <span class="bento-wish-meta" th:text="${item.tags}">Forlystelsespark i København</span>
+                    </div>
+                    <div class="bento-wish-right">
+                        <span class="bento-wish-price" th:text="${item.price + ' kr.'}">0 kr.</span>
+                        <a th:if="${isLoggedIn}" th:href="@{/{wishID}/edit(wishID=${item.wishID})}" class="btn-bento-outline">Opdater</a>
+                        <form th:if="${isLoggedIn}" th:action="@{/{wishID}/deleteWish(wishID=${item.wishID})}" method="POST" style="display: inline;" onsubmit="return confirm('Er du sikker på du vil slette dit ønske?')">
+                            <button type="submit" class="btn-bento-outline">Slet</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<script>
+    const quickWishForm = document.getElementById('quickWishForm');
+    const quickWishSubmitBtn = document.getElementById('quickWishSubmitBtn');
+    if (quickWishForm && quickWishSubmitBtn) {
+        quickWishForm.addEventListener('submit', () => {
+            if (quickWishForm.checkValidity()) {
+                quickWishSubmitBtn.disabled = true;
+            }
+        });
+    }
+</script>
+</body>
+</html>

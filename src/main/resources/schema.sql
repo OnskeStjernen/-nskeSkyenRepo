@@ -30,9 +30,12 @@ CREATE TABLE userWishes (
 
                             userWish_id INT PRIMARY KEY AUTO_INCREMENT,
                             user_id     INT NOT NULL,
-                            FOREIGN KEY (user_id) REFERENCES users (user_id),
+                            FOREIGN KEY (user_id) REFERENCES users (user_id)
+                            ON DELETE CASCADE,
+
                             wish_id     INT NOT NULL,
                             FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
+                            ON DELETE CASCADE
 );
 
 CREATE TABLE wishCounter (
@@ -62,7 +65,10 @@ CREATE TABLE tagsWish (
 
                           tagsWish_id INT PRIMARY KEY AUTO_INCREMENT,
                           tag_id INT NOT NULL,
-                          FOREIGN KEY (tag_id) REFERENCES tags (tag_id),
+                          FOREIGN KEY (tag_id) REFERENCES tags (tag_id)
+                          ON DELETE CASCADE,
+
                           wish_id INT NOT NULL,
                           FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
+                          ON DELETE CASCADE
 );
