@@ -42,4 +42,5 @@ Se CONTRIBUTING.md
 ## Prototype
 ![Prototype](OnskestjernePrototype.png)
 
-
+## ER-model
+![ER-model](ERmodel.png)
