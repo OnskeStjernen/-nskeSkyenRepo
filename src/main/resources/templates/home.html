@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+    <title>Ønskestjernen</title>
+</head>
+
+<body>
+
+<!-- Bruger bootstrap klasser til at style navigations baren -->
+<nav class="navbar navbar-light bg-light">
+
+    <div class="container">
+
+        <a class="navbar-brand" th:href="@{/}">
+            Ønskestjernen
+        </a>
+
+        <a th:href="@{/login}" class="btn btn-outline-secondary">
+            Login
+        </a>
+    </div>
+
+</nav>
+
+<div class="container text-center mt-5">
+    <h1>Velkommen til Ønskestjernen</h1>
+    <a th:href="@{/addWish}" class="btn btn-primary mt-3">
+        Opret en ønskeliste
+    </a>
+</div>
+
+<!-- Footer -->
+<footer class="text-center mt-5 p-3 bg-light">
+    <p>Ønskestjernen</p>
+</footer>
+
+</body>
+</html>
+

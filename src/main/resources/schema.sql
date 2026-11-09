@@ -1,17 +1,6 @@
 -- Database schema for OnskeSkyen --
 
-CREATE DATABASE onskeStjerne;
-USE onskeStjerne;
-
-DROP TABLE IF EXISTS tagsWish;
-DROP TABLE IF EXISTS reserve;
-DROP TABLE IF EXISTS wishCounter;
-DROP TABLE IF EXISTS userWishes;
-DROP TABLE IF EXISTS tags;
-DROP TABLE IF EXISTS wish;
-DROP TABLE IF EXISTS users;
-
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
 
                        user_id INT PRIMARY KEY AUTO_INCREMENT,
                        userName VARCHAR(100) NOT NULL UNIQUE,
@@ -19,23 +8,26 @@ CREATE TABLE users (
                        password VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE wish (
+CREATE TABLE IF NOT EXISTS wish (
 
                       wish_id INT PRIMARY KEY AUTO_INCREMENT,
                       name    VARCHAR(100) NOT NULL,
                       price   INT
 );
 
-CREATE TABLE userWishes (
+CREATE TABLE IF NOT EXISTS userWishes (
 
                             userWish_id INT PRIMARY KEY AUTO_INCREMENT,
                             user_id     INT NOT NULL,
-                            FOREIGN KEY (user_id) REFERENCES users (user_id),
+                            FOREIGN KEY (user_id) REFERENCES users (user_id)
+                            ON DELETE CASCADE,
+
                             wish_id     INT NOT NULL,
                             FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
+                            ON DELETE CASCADE
 );
 
-CREATE TABLE wishCounter (
+CREATE TABLE IF NOT EXISTS wishCounter (
 
                              wishCount_id INT PRIMARY KEY AUTO_INCREMENT,
                              wish_count INT DEFAULT 0,
@@ -43,7 +35,7 @@ CREATE TABLE wishCounter (
                              FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
 );
 
-CREATE TABLE reserve (
+CREATE TABLE IF NOT EXISTS reserve (
 
                          reserve_id INT PRIMARY KEY AUTO_INCREMENT,
                          user_id INT NOT NULL,
@@ -52,17 +44,20 @@ CREATE TABLE reserve (
                          FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
 );
 
-CREATE TABLE tags (
+CREATE TABLE IF NOT EXISTS tags (
 
                       tag_id INT PRIMARY KEY AUTO_INCREMENT,
                       tag_name VARCHAR(100) NOT NULL UNIQUE
 );
 
-CREATE TABLE tagsWish (
+CREATE TABLE IF NOT EXISTS tagsWish (
 
                           tagsWish_id INT PRIMARY KEY AUTO_INCREMENT,
                           tag_id INT NOT NULL,
-                          FOREIGN KEY (tag_id) REFERENCES tags (tag_id),
+                          FOREIGN KEY (tag_id) REFERENCES tags (tag_id)
+                          ON DELETE CASCADE,
+
                           wish_id INT NOT NULL,
                           FOREIGN KEY (wish_id) REFERENCES wish (wish_id)
+                          ON DELETE CASCADE
 );
