@@ -93,7 +93,6 @@ public class SkyController {
             return "redirect:/";
         }
         //TODO TEMP
-        return null;
     }
 
     @PostMapping("/register")
@@ -109,7 +108,6 @@ public class SkyController {
             return "redirect:/";
         }
         //TODO TEMP
-        return null;
     }
 
     @GetMapping("/login")
