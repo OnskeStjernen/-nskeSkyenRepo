@@ -38,3 +38,7 @@ Når applikationen er startet, kan den åbnes i browseren på: http://localhost:
 ## Bidrag
 
 Se CONTRIBUTING.md
+
+## Prototype
+
+
