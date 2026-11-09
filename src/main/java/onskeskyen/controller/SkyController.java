@@ -3,12 +3,14 @@ package onskeskyen.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import onskeskyen.exception.ProfileNotFoundException;
 import onskeskyen.model.Wish;
 import onskeskyen.service.SkyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +48,15 @@ public class SkyController {
     }
 
     @PostMapping("/update")
-    public String updateWish(@ModelAttribute Wish wish, HttpSession session) {
-        skyservice.editWish(wish, session);
-        return "redirect:/quickwish";
+    public String updateWish(@ModelAttribute Wish wish, HttpSession session, RedirectAttributes redirectAttribute) {
+
+        try {
+            skyservice.editWish(wish, session);
+            return "redirect:/quickwish";
+        } catch(ProfileNotFoundException pe) {
+            redirectAttribute.addFlashAttribute("errorMessage", pe.getMessage());
+            return "redirect:/login";
+        }
     }
 
     @PostMapping("/quickShareWish")
