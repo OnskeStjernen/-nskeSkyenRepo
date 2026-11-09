@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ØnskeSkyen · Forside</title>
+    <link rel="prefetch" href="/login">
+    <link rel="prefetch" href="/register">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body class="bento-page-body">
+
+<!--  top navigation bar -->
+<div th:replace="~{fragments/navbar :: Navbar}"></div>
+
+<main class="bento-main-container">
+
+    <!-- Large Shooting Star Hero Rectangle -->
+    <div th:replace="~{fragments/hero :: shootingStarHero}"></div>
+
+    <!--  Bento Grid -->
+    <section class="bento-grid" id="mine-onsker">
+
+        <!-- Wishes Overview -->
+        <div class="bento-card bento-span-2">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Overblik</span>
+                    <h2>Dine seneste ønsker</h2>
+                </div>
+                <span class="bento-status status-open" th:text="${#lists.size(wishes) + ' ønsker'}">0 ønsker</span>
+            </div>
+
+            <div class="bento-wish-list" th:if="${!#lists.isEmpty(wishes)}">
+                <div class="bento-wish-row" th:each="wish : ${wishes}">
+                    <div class="bento-wish-info">
+                        <span class="bento-wish-name" th:text="${wish.name}">Ønske</span>
+                        <span class="bento-wish-meta" th:text="${#lists.isEmpty(wish.tags) ? 'Ingen tags valgt' : #strings.listJoin(wish.tags, ' · ')}">Tags</span>
+                    </div>
+                    <div class="bento-wish-right">
+                        <span class="bento-wish-price" th:text="${wish.price + ' kr.'}">0 kr.</span>
+                        <span class="bento-status status-open" th:text="${isLoggedIn ? 'Gemt på konto' : 'Midlertidig session'}">Status</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="bento-text" th:if="${#lists.isEmpty(wishes)}">
+                Du har endnu ingen ønsker på din liste. Brug <strong>QuickWish</strong> til at tilføje dine ønsker hurtigt — både med og uden login.
+            </p>
+        </div>
+
+        <!-- Informative Guide Card -->
+        <div class="bento-card">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Sådan fungerer det</span>
+                    <h2>Fra idé til ønskeliste</h2>
+                </div>
+            </div>
+            <p class="bento-text">
+                <strong>1. Tilføj straks:</strong> Opret ønsker med pris og tags uden at logge ind først — de gemmes i din session.
+            </p>
+            <p class="bento-text">
+                <strong>2. Log ind &amp; redigér:</strong> Når du logger ind, knyttes dine ønsker automatisk til din profil, hvor du kan opdatere, slette eller dele dem via email.
+            </p>
+        </div>
+
+        <!--  Tags / Categories -->
+        <div class="bento-card" id="bento-tags">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Kategorier</span>
+                    <h2>Tags</h2>
+                </div>
+            </div>
+            <p class="bento-text">Organisér dine ønsker med faste kategorier, så gaver er nemme at finde:</p>
+            <div class="tag-cloud">
+                <span class="sky-tag" th:each="tag : ${allTags}" th:text="${tag}">Kategori</span>
+            </div>
+        </div>
+
+        <!-- Reservation and Sharing Info -->
+        <div class="bento-card bento-span-2">
+            <div class="bento-card-header">
+                <div>
+                    <span class="bento-label">Deling &amp; Samarbejde</span>
+                    <h2>Del ønsker direkte med familie og venner</h2>
+                </div>
+            </div>
+            <div class="bento-split-row">
+                <p class="bento-text mb-0">
+                    Når du er logget ind, kan du sende ønsker direkte til en anden brugers ønskeliste via deres emailadresse og undgå dobbeltkøb til fødselsdage og højtider.
+                </p>
+                <a th:if="${!isLoggedIn}" th:href="@{/login}" class="btn-bento-outline flex-shrink-0">Log ind på din konto</a>
+                <span th:if="${isLoggedIn}" class="bento-status status-open flex-shrink-0">Logget ind</span>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
