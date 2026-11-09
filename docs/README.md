@@ -44,3 +44,6 @@ Se CONTRIBUTING.md
 
 ## ER-model
 ![ER-model](ERmodel.png)
+
+## Klasse Diagram
+![Klasse Diagram](classDiagram.png)
