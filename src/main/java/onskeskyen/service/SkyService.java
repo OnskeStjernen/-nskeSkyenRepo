@@ -16,6 +16,10 @@ public class SkyService {
         this.skyRepository = skyRepository;
     }
 
+    public String getDbStatus() {
+        return skyRepository.getDbStatusMessage();
+    }
+
     public int checkLogin(String username, String password, HttpSession session, String email) {
         int result = skyRepository.loginCheck(username, password, session, email);
         if (result == 1) {

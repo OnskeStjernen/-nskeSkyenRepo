@@ -18,6 +18,12 @@ import java.util.List;
 public class SkyController {
     private final SkyService skyservice;
 
+    @GetMapping("/db-status")
+    @ResponseBody
+    public String dbStatus() {
+        return skyservice.getDbStatus();
+    }
+
     @GetMapping("/")
     public String home(ModelMap model, HttpSession session) {
         model.addAttribute("wishes", skyservice.getQuickWishes(session));
