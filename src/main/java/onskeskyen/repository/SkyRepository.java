@@ -114,25 +114,29 @@ public class SkyRepository {
     }
 
     public List<String> allTags() {
+        List<String> defaultTags = List.of("Bolig", "Elektronik", "B\u00f8ger", "T\u00f8j & Sko", "Oplevelser", "Sport", "K\u00f8kken");
 
         String sql = """
                 SELECT tag_name
                 FROM tags           
                 """;
 
-        List<String> tags = db.query(sql, (rs, rowNum) ->
-                rs.getString("tag_name"));
+        try {
+            List<String> tags = db.query(sql, (rs, rowNum) ->
+                    rs.getString("tag_name"));
 
-
-        if (tags.isEmpty()) {
-            List<String> defaultTags = List.of("Bolig", "Elektronik", "Bøger", "Tøj & Sko", "Oplevelser", "Sport", "Køkken");
-            for (String tag : defaultTags) {
-                db.update("INSERT INTO tags (tag_name) VALUES (?)", tag);
+            if (tags.isEmpty()) {
+                for (String tag : defaultTags) {
+                    db.update("INSERT INTO tags (tag_name) VALUES (?)", tag);
+                }
+                return defaultTags;
             }
+
+            return tags;
+        } catch (Exception e) {
+            System.out.println("Could not fetch tags from DB, using defaults: " + e.getMessage());
             return defaultTags;
         }
-
-        return tags;
     }
 
     @Transactional
